@@ -5,6 +5,16 @@ public final class ResourcesBasePath {
     private ResourcesBasePath() {}
 
     public static final String BASE_HTML_PATH = "html/";
+
+    /**
+     * Shared template fragments.
+     * <p>
+     * Partials are build-time inputs, not content: they are never served over HTTP and
+     * never appear in a listing. Nesting them under {@code html/} keeps them out of the
+     * page directory that {@code renderAll} iterates.
+     * </p>
+     */
+    public static final String BASE_PARTIALS_PATH = "html/partials/";
     public static final String BASE_CSS_PATH = "css/";
     public static final String BASE_JS_PATH = "js/";
 
@@ -22,6 +32,21 @@ public final class ResourcesBasePath {
      */
     public static String resolveHtmlPath(String name) {
         return resolve(BASE_HTML_PATH, name);
+    }
+
+    /**
+     * Resolves the full path for a template partial.
+     * <p>
+     * {@link #resolve(String, String)} only validates the name, never the base, so a
+     * nested base path needs no change to the resolver — the filename is still rejected
+     * if it tries to climb out of the directory.
+     * </p>
+     *
+     * @param filename the partial's filename, e.g. {@code header.html}
+     * @return the full path
+     */
+    public static String resolvePartialPath(String filename) {
+        return resolve(BASE_PARTIALS_PATH, filename);
     }
 
     public static String resolveCssPath(String filename) {

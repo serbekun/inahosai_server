@@ -32,8 +32,9 @@ public final class Main {
          * 3. Resource layer (loader -> cache -> service)
          */
         ResourceLoader resourceLoader = new ResourceLoader();
+        log.info("Resource override root: {}", resourceLoader.overrideRoot());
         ResourceCache resourceCache = new ResourceCache(resourceLoader);
-        ResourcesService resourcesService = new ResourcesService(resourceLoader, resourceCache);
+        ResourcesService resourcesService = new ResourcesService(resourceCache);
 
         /**
          * 4. HTTP layer (handlers with DI)
@@ -45,7 +46,7 @@ public final class Main {
         );
 
         Javalin svr = Javalin.create();
-        InitHttp initHttp = new InitHttp(svr, 8080, handlers);
+        InitHttp initHttp = new InitHttp(svr, 2323, handlers);
         initHttp.initHttp();
 
     }
