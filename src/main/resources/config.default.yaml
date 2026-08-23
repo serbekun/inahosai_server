@@ -1,0 +1,179 @@
+# ---------------------------------------------------------------------------
+# Bunkasai site configuration.
+#
+# This file is the single source of truth for everything school-specific. A fork
+# should copy it to ./config.yaml and edit that copy; the file you are reading is
+# the fallback bundled inside the jar.
+#
+# Load order: $BUNKASAI_CONFIG -> ./config.yaml -> this file.
+#
+# Unknown keys are an error at startup, so a typo here stops the server with a
+# message naming the key rather than silently leaving a value blank.
+#
+# Nothing in this file is secret. Never put tokens or connection strings here.
+# ---------------------------------------------------------------------------
+
+school:
+  # Full school name in Japanese. Required.
+  name_ja: "茎崎"
+  # Short form used in the header mark and the favicon glyph.
+  name_short: "茎崎"
+  # Latin transliteration, shown under the hero title.
+  name_latin: "KUKIZAKI"
+
+festival:
+  # Festival name, shown in the header, hero and footer. Required.
+  name: "稲穂祭"
+  # One-word theme. Drives the hero slogan and the centre of the theme graph.
+  slogan: "つなぐ"
+  # First day of the festival. Required.
+  #
+  # The Japanese era shown on every page ("令和8年") is derived from THIS date, not
+  # from the calendar year, because eras change mid-year. Set it to the real date.
+  #
+  # PLACEHOLDER — change this.
+  start_date: "2026-01-01"
+  # Last day of the festival. Optional; omit for a one-day festival.
+  # PLACEHOLDER — change this.
+  end_date: "2026-01-01"
+
+hero:
+  # Filename inside resources/images/ used as the hero backdrop. A bare filename,
+  # not a path. Leave empty to render no <img> at all — the hero works without one.
+  photo: "school.png"
+  # Fallback text drawn as particles on the hero canvas. Each page overrides this
+  # with its own pages[].hero_dots_text; this value is only used when that is empty.
+  dots_text: "茎崎"
+
+stream:
+  # YouTube video id for a live stream — the 11 characters after "v=", NOT a URL.
+  # Must match [A-Za-z0-9_-]{11}. Anything else is rejected with a warning and the
+  # stream is treated as absent. Leave empty when there is no stream.
+  youtube_id: ""
+
+works:
+  # Student works listed on the 学び page. An item with an empty url renders no
+  # button at all, rather than a dead link.
+  items:
+    - title: "書道作品"
+      description: "一画一画に心を込めて書き上げた、力強く美しい作品です。"
+      url: ""
+    - title: "美術作品"
+      description: "想像力と表現力を生かして描いた、色あざやかな作品です。"
+      url: ""
+    - title: "英語自己紹介カード"
+      description: "自分のことを英語で紹介！個性あふれる自己紹介カードです。"
+      url: ""
+
+graph:
+  # The theme graph drawn by graph.js on the home, 場所 and 世界 pages.
+  #
+  # Every "at" and "leaf_at" value is a normalised [x, y] pair in the range 0..1.
+  # These positions are hand-tuned, not auto-laid-out: they are placed to avoid
+  # collisions and to balance the composition. A fork with different words WILL
+  # need to retune them — which is exactly why they live here and not in graph.js.
+  #
+  # They are only used on wide viewports; the narrow layout stacks nodes on a grid
+  # and ignores them.
+  center:
+    text: "つなぐ"
+    at: [0.46, 0.48]
+  branches:
+    - label: "時間をつなぐ"
+      at: [0.27, 0.20]
+      leaves: ["過去", "現在", "未来"]
+      leaf_at: [[0.10, 0.31], [0.20, 0.09], [0.38, 0.07]]
+      # Where clicking this branch goes. A site-relative path or an absolute
+      # http(s) URL. Kept next to the branch so link order cannot drift from
+      # branch order.
+      url: "/jikan"
+    - label: "学びをつなぐ"
+      at: [0.71, 0.17]
+      leaves: ["書道", "美術", "英語"]
+      leaf_at: [[0.60, 0.06], [0.80, 0.06], [0.90, 0.26]]
+      url: "/manabi"
+    - label: "場所をつなぐ"
+      at: [0.28, 0.79]
+      leaves: ["教室", "校庭", "地域"]
+      leaf_at: [[0.13, 0.92], [0.33, 0.93], [0.10, 0.68]]
+      url: "/basho"
+    - label: "世界をつなぐ"
+      at: [0.72, 0.75]
+      leaves: ["言葉", "文化", "友情"]
+      leaf_at: [[0.88, 0.62], [0.87, 0.90], [0.66, 0.93]]
+      url: "/sekai"
+
+site:
+  # Where static assets are mounted. Must start with "/" and contain no "..".
+  static_prefix: "/static/v0"
+  # Public origin, used to build absolute og:url and og:image values for link
+  # previews. Leave empty if the site has no stable public URL yet.
+  base_url: ""
+  # Optional destination for the つながり門 header link. When empty the element is
+  # not rendered at all, rather than rendered as a dead link.
+  gate_url: ""
+  # Filename inside resources/images/ for the iOS home-screen icon. Leave empty to
+  # omit the tag — an unset icon must not become a 404 on every page.
+  apple_touch_icon: ""
+  # Filename inside resources/images/ used for link previews. Falls back to
+  # hero.photo when empty.
+  og_image: ""
+
+pages:
+  # Every page of the site. The shared header iterates this list, so the nav is
+  # identical everywhere and aria-current is computed rather than copy-pasted.
+  #
+  # - key:        internal identifier, also the nav highlight key
+  # - route:      the URL this page is served at
+  # - template:   the file in resources/html/ to render
+  # - nav_label:  text in the header nav
+  # - nav_title:  tooltip in the header nav
+  # - title:      <title>; "{festival}" is replaced with festival.name
+  # - description: <meta name="description"> and og:description
+  # - hero_dots_text: text drawn as particles on the hero canvas
+  # - footer_word:    the second line of the footer
+  - key: "index"
+    route: "/"
+    template: "index.html"
+    nav_label: "ホーム"
+    nav_title: "ホーム — トップページ"
+    title: "稲穂祭 — つなぐ"
+    description: "茎崎 稲穂祭 — つなぐ"
+    hero_dots_text: "茎崎"
+    footer_word: "茎崎"
+  - key: "jikan"
+    route: "/jikan"
+    template: "jikan.html"
+    nav_label: "時間"
+    nav_title: "時間 — タイムテーブル"
+    title: "時間をつなぐ — 稲穂祭"
+    description: "時間をつなぐ 稲穂祭 — つなぐ"
+    hero_dots_text: "時間をつなぐ"
+    footer_word: "時間をつなぐ"
+  - key: "manabi"
+    route: "/manabi"
+    template: "manabi.html"
+    nav_label: "学び"
+    nav_title: "学び — 展示・発表"
+    title: "学びをつなぐ — 稲穂祭"
+    description: "学びをつなぐ 稲穂祭 — つなぐ"
+    hero_dots_text: "学びをつなぐ"
+    footer_word: "学びをつなぐ"
+  - key: "basho"
+    route: "/basho"
+    template: "basho.html"
+    nav_label: "場所"
+    nav_title: "場所 — 会場マップ"
+    title: "場所をつなぐ — 稲穂祭"
+    description: "場所をつなぐ 稲穂祭 — つなぐ"
+    hero_dots_text: "場所をつなぐ"
+    footer_word: "場所をつなぐ"
+  - key: "sekai"
+    route: "/sekai"
+    template: "sekai.html"
+    nav_label: "世界"
+    nav_title: "世界 — 交流・世界"
+    title: "世界をつなぐ — 稲穂祭"
+    description: "世界をつなぐ 稲穂祭 — つなぐ"
+    hero_dots_text: "世界をつなぐ"
+    footer_word: "世界をつなぐ"
