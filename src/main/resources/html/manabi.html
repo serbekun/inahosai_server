@@ -1,49 +1,20 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>学びをつなぐ — 稲穂祭</title>
-<meta name="description" content="学びをつなぐ 稲穂祭 2026 — つなぐ">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230a0e16'/%3E%3Ctext x='50' y='50' fill='%23f3efe6' font-size='64' text-anchor='middle' dominant-baseline='central'%3E%E8%8C%8E%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="/static/v0/images/icon.png">
-<link rel="stylesheet" href="/static/v0/css/styles.css">
+{{>head}}
 </head>
 <body>
 
-<header class="topbar">
-  <a class="topbar__mark" href="/static/v0/html/index.html">稲穂祭</a>
-  <nav class="topbar__nav" aria-label="ページ">
-      <a class="topbar__link" href="/static/v0/html/index.html">ホーム</a>
-      <a class="topbar__link" href="/static/v0/html/jikan.html">時間</a>
-      <a class="topbar__link" href="/static/v0/html/manabi.html" aria-current="page">学び</a>
-      <a class="topbar__link" href="/static/v0/html/basho.html">場所</a>
-      <a class="topbar__link" href="/static/v0/html/sekai.html">世界</a>
-  </nav>
-  <span class="topbar__slogan">つなぐ</span>
-</header>
+{{>header}}
 
 <main>
   <section class="hero">
 
-    <div class="hero__bg">
-      <img class="hero__photo" src="/static/v0/images/school.png" alt="茎崎の校舎" decoding="async">
-      <div class="hero__scrim"></div>
-      <div class="hero__grid"></div>
-    </div>
+{{>hero-bg}}
 
-    <canvas class="hero__dots" id="dots" data-text="学びをつなぐ"></canvas>
-
-    <h1 class="visually-hidden">学びをつなぐ 稲穂祭 — つなぐ</h1>
-
-    <div class="hero__meta">
-      <p class="hero__title">稲穂祭</p>
-      <p class="hero__year">令和8年</p>
-    </div>
-
-    <p class="hero__latin">KUKIZAKI</p>
-
-    <p class="hero__slogan"><span class="hero__slogan-line"></span>つなぐ<span class="hero__slogan-line"></span></p>
+    {{#school.nameLatin}}<p class="hero__latin">{{school.nameLatin}}</p>
+    {{/school.nameLatin}}
+    <p class="hero__slogan"><span class="hero__slogan-line"></span>{{festival.slogan}}<span class="hero__slogan-line"></span></p>
 
     <a class="scrollcue" href="#works">
       <span class="scrollcue__text">SCROLL</span>
@@ -52,40 +23,25 @@
   </section>
 
   <section class="works" id="works">
-    <h2 class="visually-hidden">学びをつなぐ — 展示作品</h2>
+    <h2 class="visually-hidden">{{page.footerWord}} — 展示作品</h2>
 
     <div class="branchmap branchmap--works">
       <span class="branchmap__stem"></span>
       <span class="branchmap__bar"></span>
       <ul class="branchmap__row">
-        <li class="branchmap__node">
-          <span class="branchmap__grade">01</span>
-          <span class="branchmap__word">書道作品</span>
-          <p class="branchmap__desc">一画一画に心を込めて書き上げた、力強く美しい作品です。</p>
-          <a class="branchmap__btn" href="#">作品一覧を見る</a>
-        </li>
-        <li class="branchmap__node">
-          <span class="branchmap__grade">02</span>
-          <span class="branchmap__word">美術作品</span>
-          <p class="branchmap__desc">想像力と表現力を生かして描いた、色あざやかな作品です。</p>
-          <a class="branchmap__btn" href="#">作品一覧を見る</a>
-        </li>
-        <li class="branchmap__node">
-          <span class="branchmap__grade">03</span>
-          <span class="branchmap__word">英語自己紹介カード</span>
-          <p class="branchmap__desc">自分のことを英語で紹介！個性あふれる自己紹介カードです。</p>
-          <a class="branchmap__btn" href="#">作品一覧を見る</a>
-        </li>
+{{#works}}        <li class="branchmap__node">
+          <span class="branchmap__grade">{{ordinal}}</span>
+          <span class="branchmap__word">{{title}}</span>
+          <p class="branchmap__desc">{{description}}</p>
+{{#hasUrl}}          <a class="branchmap__btn" href="{{url}}">作品一覧を見る</a>
+{{/hasUrl}}        </li>
+{{/works}}
       </ul>
     </div>
   </section>
 </main>
 
-<footer class="foot">
-  <span>稲穂祭 令和8年</span>
-  <span>学びをつなぐ</span>
-</footer>
-
-<script src="/static/v0/js/script.js"></script>
+{{>footer}}
+<script src="{{staticPrefix}}/js/script.js"></script>
 </body>
 </html>

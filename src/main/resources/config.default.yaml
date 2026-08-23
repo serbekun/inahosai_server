@@ -36,6 +36,12 @@ festival:
   # Last day of the festival. Optional; omit for a one-day festival.
   # PLACEHOLDER — change this.
   end_date: "2026-01-01"
+  # The CONCEPT paragraph. Each entry is one line; lines are joined with a break.
+  # Written as separate entries rather than one string with markup in it, so the
+  # values stay plain text and are escaped like every other config value.
+  concept_lead:
+    - "稲穂祭は、ひとつのことばから広がっていく。"
+    - "時間を、学びを、場所を、世界を——。"
 
 hero:
   # Filename inside resources/images/ used as the hero backdrop. A bare filename,
@@ -109,9 +115,11 @@ site:
   # Public origin, used to build absolute og:url and og:image values for link
   # previews. Leave empty if the site has no stable public URL yet.
   base_url: ""
-  # Optional destination for the つながり門 header link. When empty the element is
-  # not rendered at all, rather than rendered as a dead link.
+  # Optional destination for the extra header link that sits left of the nav. When
+  # empty the element is not rendered at all, rather than rendered as a dead link.
   gate_url: ""
+  # Text of that link.
+  gate_label: "つながり門"
   # Filename inside resources/images/ for the iOS home-screen icon. Leave empty to
   # omit the tag — an unset icon must not become a 404 on every page.
   apple_touch_icon: ""

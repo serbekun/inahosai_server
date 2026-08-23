@@ -1,50 +1,20 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>場所をつなぐ — 稲穂祭</title>
-<meta name="description" content="場所をつなぐ 稲穂祭 2026 — つなぐ">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230a0e16'/%3E%3Ctext x='50' y='50' fill='%23f3efe6' font-size='64' text-anchor='middle' dominant-baseline='central'%3E%E8%8C%8E%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="/static/v0/images/icon.png">
-<link rel="stylesheet" href="/static/v0/css/styles.css">
+{{>head}}
 </head>
 <body>
 
-<header class="topbar">
-  <a class="topbar__mark" href="/static/v0/html/index.html">稲穂祭</a>
-  <nav class="topbar__nav" aria-label="ページ">
-      <span class="topbar__link topbar__link--gate" title="つながり門 — 特設ページへ" aria-hidden="true">つながり門 -&gt;</span>
-      <a class="topbar__link" href="/static/v0/html/index.html">ホーム</a>
-      <a class="topbar__link" href="/static/v0/html/jikan.html">時間</a>
-      <a class="topbar__link" href="/static/v0/html/manabi.html">学び</a>
-      <a class="topbar__link" href="/static/v0/html/basho.html" aria-current="page">場所</a>
-      <a class="topbar__link" href="/static/v0/html/sekai.html">世界</a>
-  </nav>
-  <span class="topbar__slogan">つなぐ</span>
-</header>
+{{>header}}
 
 <main>
   <section class="hero">
 
-    <div class="hero__bg">
-      <img class="hero__photo" src="/static/v0/images/school.png" alt="茎崎の校舎" decoding="async">
-      <div class="hero__scrim"></div>
-      <div class="hero__grid"></div>
-    </div>
+{{>hero-bg}}
 
-    <canvas class="hero__dots" id="dots" data-text="場所をつなぐ"></canvas>
-
-    <h1 class="visually-hidden">場所をつなぐ 稲穂祭 — つなぐ</h1>
-
-    <div class="hero__meta">
-      <p class="hero__title">稲穂祭</p>
-      <p class="hero__year">令和8年</p>
-    </div>
-
-    <p class="hero__latin">KUKIZAKI</p>
-
-    <p class="hero__slogan"><span class="hero__slogan-line"></span>つなぐ<span class="hero__slogan-line"></span></p>
+    {{#school.nameLatin}}<p class="hero__latin">{{school.nameLatin}}</p>
+    {{/school.nameLatin}}
+    <p class="hero__slogan"><span class="hero__slogan-line"></span>{{festival.slogan}}<span class="hero__slogan-line"></span></p>
 
     <a class="scrollcue" href="#concept">
       <span class="scrollcue__text">SCROLL</span>
@@ -52,31 +22,11 @@
     </a>
   </section>
 
-  <section class="concept" id="concept">
-    <header class="concept__head">
-      <h2 class="concept__label">CONCEPT</h2>
-      <p class="concept__lead">
-        稲穂祭は、ひとつのことばから広がっていく。<br>
-        時間を、学びを、場所を、世界を——。
-      </p>
-    </header>
-
-    <div class="graph">
-      <canvas class="graph__canvas" id="graph"></canvas>
-      <p class="visually-hidden">
-        つなぐ。時間をつなぐ：過去、現在、未来。学びをつなぐ：書道、美術、英語。
-        場所をつなぐ：教室、校庭、地域。世界をつなぐ：言葉、文化、友情。
-      </p>
-    </div>
-  </section>
+{{>concept}}
 </main>
 
-<footer class="foot">
-  <span>稲穂祭 令和8年</span>
-  <span>場所をつなぐ</span>
-</footer>
-
-<script src="/static/v0/js/script.js"></script>
-<script src="/static/v0/js/graph.js"></script>
+{{>footer}}
+<script src="{{staticPrefix}}/js/script.js"></script>
+<script src="{{staticPrefix}}/js/graph.js"></script>
 </body>
 </html>

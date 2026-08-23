@@ -526,3 +526,21 @@ body {
   .branchmap--works .branchmap__bar { display: none; }
   .branchmap--works .branchmap__word { letter-spacing: .08em; text-indent: .08em; }
 }
+
+/* ---------------------------------------------------------------------------
+   Setup banner.
+
+   Shown only when required config keys are still unset. It has to be impossible
+   to miss without blocking the page, so it sits above the header in normal flow
+   rather than overlaying anything.
+   --------------------------------------------------------------------------- */
+.setup-banner {
+  margin: 0;
+  padding: .7rem 1rem;
+  background: #9a7415;
+  color: #0a0e16;
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}

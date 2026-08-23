@@ -1,0 +1,16 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{{title}}}</title>
+<meta name="description" content="{{{description}}}">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{festival.name}}">
+<meta property="og:title" content="{{{ogTitle}}}">
+<meta property="og:description" content="{{{ogDescription}}}">
+{{#hasOgUrl}}<meta property="og:url" content="{{ogUrl}}">
+{{/hasOgUrl}}{{#hasOgImage}}<meta property="og:image" content="{{ogImage}}">
+{{/hasOgImage}}<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230a0e16'/%3E%3Ctext x='50' y='50' fill='%23f3efe6' font-size='64' text-anchor='middle' dominant-baseline='central'%3E{{iconGlyphEncoded}}%3C/text%3E%3C/svg%3E">
+{{#hasAppleTouchIcon}}<link rel="apple-touch-icon" href="{{appleTouchIconUrl}}">
+{{/hasAppleTouchIcon}}<link rel="stylesheet" href="{{staticPrefix}}/css/styles.css">

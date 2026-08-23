@@ -3,7 +3,9 @@
   if (!canvas || !canvas.getContext) return;
 
   const ctx  = canvas.getContext('2d', { alpha: true });
-  const TEXT = canvas.dataset.text || '茎崎';
+  // The real value always arrives as a data-text attribute, which is available even
+  // earlier than the JSON island. This fallback only covers a page that forgot it.
+  const TEXT = canvas.dataset.text || '';
   const FONT = '600 %dpx "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Source Han Serif", serif';
 
   const still = matchMedia('(prefers-reduced-motion: reduce)');
