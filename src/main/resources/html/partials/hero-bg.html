@@ -1,0 +1,14 @@
+    <div class="hero__bg">
+      {{#hasHeroPhoto}}<img class="hero__photo" src="{{heroPhotoUrl}}" alt="{{school.nameJa}}の校舎" decoding="async">
+      {{/hasHeroPhoto}}<div class="hero__scrim"></div>
+      <div class="hero__grid"></div>
+    </div>
+
+    <canvas class="hero__dots" id="dots" data-text="{{heroDotsText}}"></canvas>
+
+    <h1 class="visually-hidden">{{{description}}}</h1>
+
+    <div class="hero__meta">
+      <p class="hero__title">{{festival.name}}</p>
+      <p class="hero__year">{{era}}</p>
+    </div>

@@ -6,25 +6,43 @@
   const FONT = '600 %dpx "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Source Han Serif", serif';
   const still = matchMedia('(prefers-reduced-motion: reduce)');
 
-  const CENTER = { text: 'つなぐ', at: [0.46, 0.48] };
+  // Theme words and their positions come from the server-rendered JSON island so a
+  // fork can change them without touching this file. JSON.parse from the DOM is
+  // synchronous, so there is no extra request and no race with the intro animation.
+  // Do not replace this with fetch.
+  const islandEl = document.getElementById('site-config');
+  let CFG = null;
+  try {
+    CFG = islandEl ? JSON.parse(islandEl.textContent) : null;
+  } catch (e) {
+    CFG = null;
+  }
 
-  const BRANCHES = [
+  // Fallbacks so an unconfigured fork still renders something rather than a blank
+  // canvas. Every "at" and "leafAt" pair is normalised 0..1 and hand-tuned, not
+  // auto-laid-out, so different words will need retuning -- in the config, not here.
+  const DEFAULT_CENTER = { text: 'つなぐ', at: [0.46, 0.48] };
+
+  const DEFAULT_BRANCHES = [
     { label: '時間をつなぐ', at: [0.27, 0.20],
       leaves: ['過去', '現在', '未来'],
-      leafAt: [[0.10, 0.31], [0.20, 0.09], [0.38, 0.07]] },
+      leafAt: [[0.10, 0.31], [0.20, 0.09], [0.38, 0.07]], url: '/jikan' },
 
     { label: '学びをつなぐ', at: [0.71, 0.17],
       leaves: ['書道', '美術', '英語'],
-      leafAt: [[0.60, 0.06], [0.80, 0.06], [0.90, 0.26]] },
+      leafAt: [[0.60, 0.06], [0.80, 0.06], [0.90, 0.26]], url: '/manabi' },
 
     { label: '場所をつなぐ', at: [0.28, 0.79],
       leaves: ['教室', '校庭', '地域'],
-      leafAt: [[0.13, 0.92], [0.33, 0.93], [0.10, 0.68]] },
+      leafAt: [[0.13, 0.92], [0.33, 0.93], [0.10, 0.68]], url: '/basho' },
 
     { label: '世界をつなぐ', at: [0.72, 0.75],
       leaves: ['言葉', '文化', '友情'],
-      leafAt: [[0.88, 0.62], [0.87, 0.90], [0.66, 0.93]] },
+      leafAt: [[0.88, 0.62], [0.87, 0.90], [0.66, 0.93]], url: '/sekai' },
   ];
+
+  const CENTER = CFG?.graph?.center ?? DEFAULT_CENTER;
+  const BRANCHES = (CFG?.graph?.branches?.length ? CFG.graph.branches : DEFAULT_BRANCHES);
 
   const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
@@ -86,13 +104,9 @@
   let branchNodes = [];
   let hovered = -1;
 
-  const HTML_API = '/static/v0/html/';
-  const BRANCH_LINKS = [
-    HTML_API + 'jikan.html',
-    HTML_API + 'manabi.html',
-    HTML_API + 'basho.html',
-    HTML_API + 'sekai.html',
-  ];
+  // Each branch carries its own destination, so link order cannot drift away from
+  // branch order the way two parallel arrays eventually would.
+  const BRANCH_LINKS = BRANCHES.map((b) => b.url || '');
   const HOVER = 1.28;
 
   const COLORS = { center: '#9a7415', branch: '#171d27', leaf: '#5c6472', edge: 'rgba(23,29,39,.24)' };
@@ -362,7 +376,8 @@
   canvas.addEventListener('click', (e) => {
     const r = canvas.getBoundingClientRect();
     const b = branchAt(e.clientX - r.left, e.clientY - r.top);
-    if (b >= 0) location.href = BRANCH_LINKS[b];
+    // An unconfigured branch has no destination; do not navigate to an empty URL.
+    if (b >= 0 && BRANCH_LINKS[b]) location.href = BRANCH_LINKS[b];
   });
 
   build();

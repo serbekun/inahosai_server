@@ -44,12 +44,12 @@ public record SiteConfig(
 
     public SiteConfig {
         school = school != null ? school : new School(null, null, null);
-        festival = festival != null ? festival : new Festival(null, null, null, null);
+        festival = festival != null ? festival : new Festival(null, null, null, null, null);
         hero = hero != null ? hero : new Hero(null, null);
         stream = stream != null ? stream : new Stream(null);
         works = works != null ? works : new Works(null);
         graph = graph != null ? graph : new Graph(null, null);
-        site = site != null ? site : new Site(null, null, null, null, null);
+        site = site != null ? site : new Site(null, null, null, null, null, null);
         pages = copyOf(pages);
     }
 
@@ -66,10 +66,12 @@ public record SiteConfig(
      * The festival itself. {@code startDate} is what the Japanese era is derived from
      * (see {@link JapaneseEra}), so it must be the real first day of the festival.
      */
-    public record Festival(String name, String slogan, LocalDate startDate, LocalDate endDate) {
+    public record Festival(String name, String slogan, LocalDate startDate, LocalDate endDate,
+                           List<String> conceptLead) {
         public Festival {
             name = str(name);
             slogan = str(slogan);
+            conceptLead = copyOf(conceptLead);
         }
     }
 
@@ -142,12 +144,13 @@ public record SiteConfig(
     }
 
     /** Site-wide URLs and assets. */
-    public record Site(String staticPrefix, String baseUrl, String gateUrl,
+    public record Site(String staticPrefix, String baseUrl, String gateUrl, String gateLabel,
                        String appleTouchIcon, String ogImage) {
         public Site {
             staticPrefix = safeStaticPrefix(staticPrefix);
             baseUrl = safeLinkUrl(baseUrl, "site.base_url");
             gateUrl = safeLinkUrl(gateUrl, "site.gate_url");
+            gateLabel = str(gateLabel);
             appleTouchIcon = safeImageName(appleTouchIcon);
             ogImage = safeImageName(ogImage);
         }

@@ -1,0 +1,11 @@
+{{>banner}}
+<header class="topbar">
+  <a class="topbar__mark" href="/">{{festival.name}}</a>
+  <nav class="topbar__nav" aria-label="ページ">
+{{#hasGate}}      <a class="topbar__link topbar__link--gate" href="{{gateUrl}}" title="{{gateLabel}}">{{gateLabel}} -&gt;</a>
+{{/hasGate}}
+{{#nav}}      <a class="topbar__link" href="{{href}}"{{#current}} aria-current="page"{{/current}}{{#hasNavTitle}} title="{{navTitle}}"{{/hasNavTitle}}>{{label}}</a>
+{{/nav}}
+  </nav>
+  <span class="topbar__slogan">{{festival.slogan}}</span>
+</header>

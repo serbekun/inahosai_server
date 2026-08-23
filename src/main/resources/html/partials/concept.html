@@ -1,0 +1,14 @@
+  <section class="concept" id="concept">
+    <header class="concept__head">
+      <h2 class="concept__label">CONCEPT</h2>
+      <p class="concept__lead">
+{{#conceptLines}}        {{text}}{{#hasNext}}<br>{{/hasNext}}
+{{/conceptLines}}
+      </p>
+    </header>
+
+    <div class="graph">
+      <canvas class="graph__canvas" id="graph"></canvas>
+      <p class="visually-hidden">{{graphSummary}}</p>
+    </div>
+  </section>
