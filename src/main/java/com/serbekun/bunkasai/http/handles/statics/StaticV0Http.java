@@ -101,10 +101,11 @@ public class StaticV0Http {
      */
     public enum StaticResource {
 
-        // The HTML listing is not public: it would publish an inventory of every
-        // page, drafts and debug pages included.
+        // HTML is deliberately absent. Pages are pre-rendered from templates and
+        // served from their own routes, so serving the raw html/ directory here would
+        // publish the templates themselves, the partials under it, and the
+        // point_text.html debug playground.
         CSS(ResourcesBasePath.BASE_CSS_PATH, true),
-        HTML(ResourcesBasePath.BASE_HTML_PATH, false),
         IMAGES(ResourcesBasePath.BASE_IMAGES_PATH, true),
         JS(ResourcesBasePath.BASE_JS_PATH, true),
         JSON(ResourcesBasePath.BASE_JSON_PATH, true),
