@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.serbekun.bunkasai.BuildInfo;
 import com.serbekun.bunkasai.config.SiteConfig;
 import com.serbekun.bunkasai.config.SiteConfigLoader;
+import com.serbekun.bunkasai.http.handles.AdminReload;
 import com.serbekun.bunkasai.http.handles.PageRoutes;
 import com.serbekun.bunkasai.http.handles.SetupPage;
 import com.serbekun.bunkasai.http.handles.StaticRoutes;
@@ -47,7 +48,8 @@ public final class Main {
          * process. Rendering five pages takes milliseconds, so there is no reason to
          * defer it to the first request.
          */
-        SiteConfig siteConfig = new SiteConfigLoader().load();
+        SiteConfigLoader siteConfigLoader = new SiteConfigLoader();
+        SiteConfig siteConfig = siteConfigLoader.load();
         warnAboutMissingConfig(siteConfig);
 
         SiteRenderer siteRenderer = new SiteRenderer(resourcesService);
@@ -61,6 +63,7 @@ public final class Main {
             new V0Health(),
             pageRoutes,
             setupPage,
+            new AdminReload(siteConfigLoader::load, pageRoutes, setupPage),
             new StaticRoutes(resourcesService)
         );
 
