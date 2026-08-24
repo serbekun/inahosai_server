@@ -250,6 +250,23 @@ public class SiteRenderer {
         model.put("gateUrl", site.gateUrl());
         model.put("gateLabel", site.gateLabel());
 
+        model.put("hasRepo", !site.repoUrl().isEmpty() && !site.repoLabel().isEmpty());
+        model.put("repoUrl", site.repoUrl());
+        model.put("repoLabel", site.repoLabel());
+        // The footer credits the school itself rather than the page word, so the right
+        // side reads the same on every page.
+        String schoolLabel = !config.school().nameShort().isEmpty()
+                ? config.school().nameShort()
+                : config.school().nameJa();
+        model.put("schoolLabel", schoolLabel);
+        model.put("hasSchoolLink", !schoolLabel.isEmpty() && !site.schoolUrl().isEmpty());
+        model.put("schoolUrl", site.schoolUrl());
+
+        model.put("hasAuthor", !site.author().isEmpty());
+        model.put("author", site.author());
+        model.put("hasAuthorLink", !site.author().isEmpty() && !site.authorUrl().isEmpty());
+        model.put("authorUrl", site.authorUrl());
+
         model.put("hasAppleTouchIcon", !site.appleTouchIcon().isEmpty());
         model.put("appleTouchIconUrl", imageUrl(staticPrefix, site.appleTouchIcon()));
 

@@ -387,14 +387,56 @@ body {
 
 .foot {
   display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: .8rem 1rem;
   padding: clamp(20px, 3vh, 34px) clamp(18px, 4vw, 60px);
   border-top: 1px solid var(--ink-faint);
   font-family: ui-sans-serif, "Helvetica Neue", Arial, sans-serif;
   font-size: 11px;
   letter-spacing: .34em;
   color: var(--ink-soft);
+}
+
+/* The festival name and the source note read as one left-hand group, so they travel
+   together when the footer wraps and only the page word sits on the right. */
+.foot__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .5rem clamp(16px, 2.4vw, 34px);
+}
+
+/* Baseline, not centre: the link carries a padding-bottom for its underline, which
+   under centre alignment lifts its text a pixel or two above the licence note. */
+.foot__meta {
+  display: flex;
+  align-items: baseline;
+  gap: .7em;
+}
+
+/* Drawn here rather than written into the markup: it stays out of the accessibility
+   tree without an aria-hidden attribute, and an unset site.repo_url leaves no stray
+   separator behind, because without the link there is no sibling to match. */
+.foot__link + .foot__license::before {
+  content: "\00b7";
+  margin-right: .7em;
+  color: var(--ink-faint);
+}
+
+.foot__link {
+  color: inherit;
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: color .25s ease, border-color .25s ease;
+}
+.foot__link:hover,
+.foot__link:focus-visible { color: var(--ink); border-bottom-color: currentColor; }
+
+@media (max-width: 640px) {
+  .foot { letter-spacing: .16em; }
 }
 
 .branchmap {

@@ -164,7 +164,7 @@ class SiteConfigTest {
     }
 
     private static String prefix(String value) {
-        return new SiteConfig.Site(value, "", "", "", "", "").staticPrefix();
+        return new SiteConfig.Site(value, "", "", "", "", "", "", "", "", "", "").staticPrefix();
     }
 
     // endregion

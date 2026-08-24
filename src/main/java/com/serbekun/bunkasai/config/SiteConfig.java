@@ -49,7 +49,10 @@ public record SiteConfig(
         stream = stream != null ? stream : new Stream(null);
         works = works != null ? works : new Works(null);
         graph = graph != null ? graph : new Graph(null, null);
-        site = site != null ? site : new Site(null, null, null, null, null, null);
+        site = site != null
+                ? site
+                : new Site(null, null, null, null, null, null, null, null, null, null,
+                        null);
         pages = copyOf(pages);
     }
 
@@ -143,9 +146,17 @@ public record SiteConfig(
         }
     }
 
-    /** Site-wide URLs and assets. */
+    /**
+     * Site-wide URLs and assets.
+     *
+     * <p>The last four fields are the footer's credits: {@code repoUrl} is the source
+     * link, {@code author} and {@code authorUrl} the person who wrote it, and
+     * {@code schoolUrl} the school's own website. A fork changes all of them to its own
+     * rather than crediting upstream's.
+     */
     public record Site(String staticPrefix, String baseUrl, String gateUrl, String gateLabel,
-                       String appleTouchIcon, String ogImage) {
+                       String appleTouchIcon, String ogImage, String repoUrl, String repoLabel,
+                       String author, String authorUrl, String schoolUrl) {
         public Site {
             staticPrefix = safeStaticPrefix(staticPrefix);
             baseUrl = safeLinkUrl(baseUrl, "site.base_url");
@@ -153,6 +164,11 @@ public record SiteConfig(
             gateLabel = str(gateLabel);
             appleTouchIcon = safeImageName(appleTouchIcon);
             ogImage = safeImageName(ogImage);
+            repoUrl = safeLinkUrl(repoUrl, "site.repo_url");
+            repoLabel = str(repoLabel);
+            author = str(author);
+            authorUrl = safeLinkUrl(authorUrl, "site.author_url");
+            schoolUrl = safeLinkUrl(schoolUrl, "site.school_url");
         }
     }
 

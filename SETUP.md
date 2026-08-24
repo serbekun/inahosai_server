@@ -62,6 +62,13 @@ Note that Java renders the first year of an era as `令和1年`, not `令和元�
 - `site.base_url` — your public origin. **Without it, `og:url` and `og:image` are
   omitted**, because a relative image URL is useless to a link-preview crawler. Set it
   if the site will be shared in LINE.
+- `site.repo_url` — the repository the footer links to. It ships pointing at the
+  upstream project; a fork should point it at its own. The footer also states that the
+  code is MIT-licensed, which is a property of the code rather than of your school, so
+  that text is not configurable.
+- `site.author` / `site.author_url` — the credit at the end of the footer and where it
+  links.
+- `site.school_url` — the school's own website. The footer's school name links to it.
 - `pages` — the pages, their routes and their nav labels. The shared header is
   generated from this list, so the navigation is identical on every page.
 - `graph` — the theme words on the home, 場所 and 世界 pages.
@@ -73,6 +80,9 @@ An unconfigured fork must never show a dead link or a broken image. So:
 - no `works[].url` → the 作品一覧を見る button is not rendered at all
 - no `hero.photo` → no `<img>`; the hero composition already works without one
 - no `site.gate_url` → the extra header link is absent entirely
+- no `site.repo_url` → the footer shows the licence note without a source link
+- no `site.author` → the footer credits the school alone
+- no `site.author_url` or `site.school_url` → that name stays plain text, not a link
 - no `site.apple_touch_icon` → the tag is omitted rather than pointing at a 404
 - a malformed `stream.youtube_id` → treated as no stream, and logged
 
