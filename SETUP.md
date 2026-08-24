@@ -113,7 +113,7 @@ The server listens on port 2323. Pages are served at `/`, `/jikan`, `/manabi`,
 `/basho` and `/sekai`; static assets under `/static/v0/`.
 
 Every page is rendered once at startup and held in memory. Editing a template or the
-config therefore needs a restart — or a call to `/admin/reload`, which is only
+config therefore needs a restart — or a call to `/api/v0/admin/reload`, which is only
 registered when `BUNKASAI_ADMIN_TOKEN` is set.
 
 ## 8. Licence
