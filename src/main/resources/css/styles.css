@@ -544,3 +544,24 @@ body {
   line-height: 1.5;
   text-align: center;
 }
+
+/* ---------------------------------------------------------------------------
+   Setup checklist (/setup, development only).
+   --------------------------------------------------------------------------- */
+.setup { margin: 0 auto; max-width: 60rem; padding: 0 1rem 3rem; }
+
+.setup__table { border-collapse: collapse; font-size: .9rem; width: 100%; }
+
+.setup__table th,
+.setup__table td {
+  border-bottom: 1px solid rgba(243, 239, 230, .14);
+  padding: .5rem .6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.setup__table th { font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+
+.setup__table code { font-size: .95em; word-break: break-all; }
+
+.setup__note { font-size: .8rem; opacity: .7; }

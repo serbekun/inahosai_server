@@ -9,6 +9,7 @@ import com.serbekun.bunkasai.BuildInfo;
 import com.serbekun.bunkasai.config.SiteConfig;
 import com.serbekun.bunkasai.config.SiteConfigLoader;
 import com.serbekun.bunkasai.http.handles.PageRoutes;
+import com.serbekun.bunkasai.http.handles.SetupPage;
 import com.serbekun.bunkasai.http.handles.StaticRoutes;
 import com.serbekun.bunkasai.http.handles.V0Health;
 
@@ -51,6 +52,7 @@ public final class Main {
 
         SiteRenderer siteRenderer = new SiteRenderer(resourcesService);
         PageRoutes pageRoutes = new PageRoutes(siteRenderer, siteConfig);
+        SetupPage setupPage = new SetupPage(siteRenderer, siteConfig);
 
         /**
          * 5. HTTP layer (handlers with DI)
@@ -58,6 +60,7 @@ public final class Main {
         List<HttpHandler> handlers = List.of(
             new V0Health(),
             pageRoutes,
+            setupPage,
             new StaticRoutes(resourcesService)
         );
 

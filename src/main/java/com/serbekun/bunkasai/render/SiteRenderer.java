@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
+import com.serbekun.bunkasai.config.ConfigKeys;
 import com.serbekun.bunkasai.config.JapaneseEra;
 import com.serbekun.bunkasai.config.SiteConfig;
 import com.serbekun.bunkasai.resources.Etags;
@@ -37,6 +38,9 @@ public class SiteRenderer {
 
     /** Name of the template rendered for unmatched routes. */
     public static final String NOT_FOUND_TEMPLATE = "404.html";
+
+    /** Name of the development-only setup template. */
+    public static final String SETUP_TEMPLATE = "setup.html";
 
     private final ResourcesService resources;
     private final Mustache.Compiler compiler;
@@ -137,7 +141,51 @@ public class SiteRenderer {
         SiteConfig.Page page = new SiteConfig.Page(
                 "404", "", NOT_FOUND_TEMPLATE, "", "",
                 "404 — {{festival.name}}", "", "", "");
-        return render(template, model(config, page), NOT_FOUND_TEMPLATE);
+        Map<String, Object> model = model(config, page);
+        // An error body has no canonical URL and should never be indexed.
+        suppressSharing(model);
+        return render(template, model, NOT_FOUND_TEMPLATE);
+    }
+
+    /**
+     * Renders the setup page.
+     *
+     * <p>Reports key names and whether each is set. It never renders a value: nothing in
+     * this config is secret today, but a page that prints config values becomes a leak
+     * the moment somebody adds a key that is.
+     *
+     * @param config the site config
+     * @return the rendered setup page, or null if its template is missing
+     */
+    public RenderedPage renderSetup(SiteConfig config) {
+        String template = resources.getHtml(SETUP_TEMPLATE);
+        if (template == null) {
+            log.warn("No {} template found; the setup page is unavailable", SETUP_TEMPLATE);
+            return null;
+        }
+        SiteConfig.Page page = new SiteConfig.Page(
+                "setup", "", SETUP_TEMPLATE, "", "",
+                "SETUP — {{festival.name}}", "", "", "SETUP");
+        Map<String, Object> model = model(config, page);
+        model.put("configKeys", ConfigKeys.status(config));
+        // A development aid is neither shareable nor indexable, and the link-preview tags
+        // would otherwise echo site.base_url back onto a page whose whole promise is that
+        // it prints no config values.
+        suppressSharing(model);
+        return render(template, model, SETUP_TEMPLATE);
+    }
+
+    /**
+     * Marks a page as neither indexable nor shareable, and drops its link-preview URLs.
+     *
+     * @param model the model to adjust
+     */
+    private static void suppressSharing(Map<String, Object> model) {
+        model.put("noIndex", true);
+        model.put("hasOgUrl", false);
+        model.put("hasOgImage", false);
+        model.put("ogUrl", "");
+        model.put("ogImage", "");
     }
 
     /**
