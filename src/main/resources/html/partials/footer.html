@@ -1,6 +1,18 @@
 <footer class="foot">
-  <span>{{festival.name}} {{era}}</span>
-  <span>{{page.footerWord}}</span>
+  <span class="foot__group">
+    <span>{{festival.name}} {{era}}</span>
+    <span class="foot__meta">
+{{#hasRepo}}      <a class="foot__link" href="{{repoUrl}}" target="_blank" rel="noopener noreferrer">{{repoLabel}}</a>
+{{/hasRepo}}      <span class="foot__license">MIT LICENSE</span>
+    </span>
+  </span>
+  <span class="foot__meta">
+{{#hasSchoolLink}}    <a class="foot__link" href="{{schoolUrl}}" target="_blank" rel="noopener noreferrer">{{schoolLabel}}</a>
+{{/hasSchoolLink}}{{^hasSchoolLink}}    <span>{{schoolLabel}}</span>
+{{/hasSchoolLink}}{{#hasAuthor}}    <span>&amp;</span>
+{{#hasAuthorLink}}    <a class="foot__link" href="{{authorUrl}}" target="_blank" rel="noopener noreferrer">{{author}}</a>
+{{/hasAuthorLink}}{{^hasAuthorLink}}    <span>{{author}}</span>
+{{/hasAuthorLink}}{{/hasAuthor}}  </span>
 </footer>
 
 <script type="application/json" id="site-config">{{{configJson}}}</script>

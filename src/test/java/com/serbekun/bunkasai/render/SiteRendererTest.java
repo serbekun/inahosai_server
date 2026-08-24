@@ -3,6 +3,7 @@ package com.serbekun.bunkasai.render;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -219,6 +220,59 @@ class SiteRendererTest {
 
         assertThat(html).contains("<a class=\"topbar__link topbar__link--gate\" href=\"/gate\"");
         assertThat(html).doesNotContain("aria-hidden=\"true\"");
+    }
+
+    @Test
+    void theFooterLinksToTheConfiguredRepository() {
+        String html = render(defaultConfig(), "/");
+
+        assertThat(html).contains(
+                "<a class=\"foot__link\" href=\"https://github.com/serbekun/bunkasai_server\"");
+        assertThat(html).contains("MIT LICENSE");
+    }
+
+    @Test
+    void anUnsetRepoUrlLeavesTheLicenceNoteWithoutALink() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {repo_url: ""}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        String html = render(config, "/");
+
+        assertThat(html).doesNotContain("foot__link");
+        assertThat(html).contains("MIT LICENSE");
+    }
+
+    @Test
+    void theFooterCreditsTheSchoolAndTheAuthorOnEveryPage() {
+        // The credits are the school and the author, not the page word, so the right
+        // side of the footer reads the same everywhere.
+        for (String route : List.of("/", "/jikan", "/manabi")) {
+            assertThat(render(defaultConfig(), route)).as("credits on %s", route)
+                    .contains("<a class=\"foot__link\" href=\"https://www.tsukuba-school.jp/kuj/\"")
+                    .contains("<a class=\"foot__link\" href=\"https://github.com/serbekun\"")
+                    .contains("serbekun");
+        }
+    }
+
+    @Test
+    void unsetCreditUrlsLeaveTheNamesAsPlainText() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎", name_short: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {author: "serbekun"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        String html = render(config, "/");
+
+        assertThat(html).contains("<span>茎崎</span>").contains("<span>serbekun</span>");
+        assertThat(html).doesNotContain("foot__link");
     }
 
     // endregion

@@ -74,9 +74,11 @@ class SetupPageTest {
         JavalinTest.test(appFor(config, true), (server, client) -> {
             String body = client.get("/setup").body().string();
 
-            // The festival name legitimately appears in the shared header, but values
-            // that only exist in config must not be echoed back.
-            assertThat(body).doesNotContain("SECRET-SCHOOL-NAME");
+            // The festival name legitimately appears in the shared header and the school
+            // name in the shared footer, so the key listing — everything above the
+            // footer — is what must not echo a value back.
+            String listing = body.substring(0, body.indexOf("<footer"));
+            assertThat(listing).doesNotContain("SECRET-SCHOOL-NAME");
             assertThat(body).doesNotContain("dQw4w9WgXcQ");
             assertThat(body).doesNotContain("secret.example.com");
         });

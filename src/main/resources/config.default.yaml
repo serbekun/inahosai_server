@@ -126,6 +126,19 @@ site:
   # Filename inside resources/images/ used for link previews. Falls back to
   # hero.photo when empty.
   og_image: ""
+  # Source repository, linked from the footer next to the MIT licence note. A fork
+  # should point this at ITS OWN repository. Leave empty to render no link at all.
+  repo_url: "https://github.com/serbekun/bunkasai_server"
+  # Text of that link.
+  repo_label: "GITHUB"
+  # Credit shown at the end of the footer, after the school name.
+  author: "serbekun"
+  # Where that credit links — the author's own page. Leave empty to render the name
+  # as plain text rather than a link.
+  author_url: "https://github.com/serbekun"
+  # The school's own website, linked from the school name in the footer. Leave empty
+  # to render the name as plain text.
+  school_url: "https://www.tsukuba-school.jp/kuj/"
 
 pages:
   # Every page of the site. The shared header iterates this list, so the nav is
@@ -139,7 +152,7 @@ pages:
   # - title:      <title>; "{festival}" is replaced with festival.name
   # - description: <meta name="description"> and og:description
   # - hero_dots_text: text drawn as particles on the hero canvas
-  # - footer_word:    the second line of the footer
+  # - footer_word:    the page's own word, used as the 学び page's hidden heading
   - key: "index"
     route: "/"
     template: "index.html"
