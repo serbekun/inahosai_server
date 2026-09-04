@@ -9,6 +9,7 @@ import com.serbekun.bunkasai.BuildInfo;
 import com.serbekun.bunkasai.config.SiteConfig;
 import com.serbekun.bunkasai.config.SiteConfigLoader;
 import com.serbekun.bunkasai.http.handles.AdminReload;
+import com.serbekun.bunkasai.http.handles.DebugPages;
 import com.serbekun.bunkasai.http.handles.PageRoutes;
 import com.serbekun.bunkasai.http.handles.SetupPage;
 import com.serbekun.bunkasai.http.handles.StaticRoutes;
@@ -63,6 +64,7 @@ public final class Main {
             new V0Health(),
             pageRoutes,
             setupPage,
+            new DebugPages(resourcesService, siteConfig),
             new AdminReload(siteConfigLoader::load, pageRoutes, setupPage),
             new StaticRoutes(resourcesService)
         );

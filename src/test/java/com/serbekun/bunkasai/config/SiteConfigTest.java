@@ -168,4 +168,26 @@ class SiteConfigTest {
     }
 
     // endregion
+
+    // region debug block
+
+    @Test
+    void debugDefaultsToDisabledWithNoToken() {
+        SiteConfig config = loader.loadBundledDefault();
+        assertThat(config.debug().enabled()).isFalse();
+        assertThat(config.debug().token()).isEmpty();
+    }
+
+    @Test
+    void debugCanBeEnabledWithAToken() {
+        SiteConfig config = loader.parse("""
+                debug:
+                  enabled: true
+                  token: "  SECRET  "
+                """);
+        assertThat(config.debug().enabled()).isTrue();
+        assertThat(config.debug().token()).isEqualTo("SECRET");
+    }
+
+    // endregion
 }
