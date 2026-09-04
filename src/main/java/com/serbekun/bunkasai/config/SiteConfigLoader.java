@@ -181,6 +181,6 @@ public final class SiteConfigLoader {
      * @return an empty config
      */
     public static SiteConfig emptyConfig() {
-        return new SiteConfig(null, null, null, null, null, null, null, null);
+        return new SiteConfig(null, null, null, null, null, null, null, null, null);
     }
 }

@@ -100,7 +100,14 @@ public final class ConfigKeys {
                     false, c -> !c.site().schoolUrl().isEmpty()),
 
             new Key("pages", "The pages of the site, their routes and their nav labels.",
-                    false, c -> !c.pages().isEmpty()));
+                    false, c -> !c.pages().isEmpty()),
+
+            new Key("debug.enabled",
+                    "Serve raw HTML playground files under /debug/. Off by default.",
+                    false, c -> c.debug().enabled()),
+            new Key("debug.token",
+                    "Optional gate for /debug/*. Set one when sharing a playground publicly.",
+                    false, c -> !c.debug().token().isEmpty()));
 
     /**
      * The catalogue.

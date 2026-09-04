@@ -140,6 +140,19 @@ site:
   # to render the name as plain text.
   school_url: "https://www.tsukuba-school.jp/kuj/"
 
+debug:
+  # Serves raw, page-less HTML "playground" files from resources/html/ — files such as
+  # point_text.html that are not configured pages and have no clean route — under
+  # /debug/<filename>. Off by default, so nothing is published until a fork opts in,
+  # even on a production deployment.
+  #
+  # Note: turning this on (or off) takes effect at startup only, like the page routes.
+  enabled: false
+  # When set, /debug/* responds only to a request that passes this as the "token" query
+  # parameter (e.g. /debug/point_text.html?token=SECRET). Leave empty for no token. A
+  # public deployment that shares a playground should usually set one.
+  token: ""
+
 pages:
   # Every page of the site. The shared header iterates this list, so the nav is
   # identical everywhere and aria-current is computed rather than copy-pasted.
