@@ -35,7 +35,8 @@ public record SiteConfig(
         Works works,
         Graph graph,
         Site site,
-        List<Page> pages) {
+        List<Page> pages,
+        Debug debug) {
 
     private static final Logger log = LoggerFactory.getLogger(SiteConfig.class);
 
@@ -54,6 +55,7 @@ public record SiteConfig(
                 : new Site(null, null, null, null, null, null, null, null, null, null,
                         null);
         pages = copyOf(pages);
+        debug = debug != null ? debug : new Debug(false, "");
     }
 
     /** The school the festival belongs to. */
@@ -169,6 +171,23 @@ public record SiteConfig(
             author = str(author);
             authorUrl = safeLinkUrl(authorUrl, "site.author_url");
             schoolUrl = safeLinkUrl(schoolUrl, "site.school_url");
+        }
+    }
+
+    /**
+     * Opt-in serving of raw, page-less HTML "playground" files from {@code resources/html/}.
+     *
+     * <p>These are standalone files such as {@code point_text.html} that are not configured
+     * pages (and so have no clean route) but are useful to open while developing or on a
+     * deployment that wants to share them. They are only reachable when {@code enabled} is
+     * true, and when {@code token} is set a request must present it to be served at all.
+     *
+     * @param enabled whether the raw playground mount is registered
+     * @param token   optional gate; blank means the mount needs no token
+     */
+    public record Debug(boolean enabled, String token) {
+        public Debug {
+            token = str(token);
         }
     }
 
