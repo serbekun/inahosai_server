@@ -1,11 +1,11 @@
 # ---------------------------------------------------------------------------
-# Bunkasai site configuration.
+# INAHOSAI site configuration.
 #
 # This file is the single source of truth for everything school-specific. A fork
 # should copy it to ./config.yaml and edit that copy; the file you are reading is
 # the fallback bundled inside the jar.
 #
-# Load order: $BUNKASAI_CONFIG -> ./config.yaml -> this file.
+# Load order: $INAHOSAI_CONFIG -> ./config.yaml -> this file.
 #
 # Unknown keys are an error at startup, so a typo here stops the server with a
 # message naming the key rather than silently leaving a value blank.
@@ -32,10 +32,10 @@ festival:
   # from the calendar year, because eras change mid-year. Set it to the real date.
   #
   # PLACEHOLDER — change this.
-  start_date: "2026-01-01"
+  start_date: "2026-09-18"
   # Last day of the festival. Optional; omit for a one-day festival.
   # PLACEHOLDER — change this.
-  end_date: "2026-01-01"
+  end_date: "2026-10-02"
   # The CONCEPT paragraph. Each entry is one line; lines are joined with a break.
   # Written as separate entries rather than one string with markup in it, so the
   # values stay plain text and are escaped like every other config value.
@@ -52,10 +52,19 @@ hero:
   dots_text: "茎崎"
 
 stream:
+  # Which live platform to embed: "youtube" or "zoom". Set to "none" (or leave blank)
+  # when there is no broadcast.
+  #
+  # Leave this blank to infer the platform from whichever payload is set below, so a
+  # config that only fills youtube_id keeps working.
+  type: "none"
   # YouTube video id for a live stream — the 11 characters after "v=", NOT a URL.
   # Must match [A-Za-z0-9_-]{11}. Anything else is rejected with a warning and the
   # stream is treated as absent. Leave empty when there is no stream.
   youtube_id: ""
+  # Zoom meeting URL (https://...). Only used when type is "zoom". Leave empty when
+  # there is no Zoom stream.
+  zoom_url: ""
 
 works:
   # Student works listed on the 学び page. An item with an empty url renders no
@@ -100,12 +109,12 @@ graph:
       url: "/manabi"
     - label: "場所をつなぐ"
       at: [0.28, 0.79]
-      leaves: ["教室", "校庭", "地域"]
+      leaves: ["Live"]
       leaf_at: [[0.13, 0.92], [0.33, 0.93], [0.10, 0.68]]
       url: "/basho"
-    - label: "世界をつなぐ"
+    - label: "世代をつなぐ"
       at: [0.72, 0.75]
-      leaves: ["言葉", "文化", "友情"]
+      leaves: ["みんなの投稿。"]
       leaf_at: [[0.88, 0.62], [0.87, 0.90], [0.66, 0.93]]
       url: "/sekai"
 
@@ -128,7 +137,7 @@ site:
   og_image: ""
   # Source repository, linked from the footer next to the MIT licence note. A fork
   # should point this at ITS OWN repository. Leave empty to render no link at all.
-  repo_url: "https://github.com/serbekun/bunkasai_server"
+  repo_url: "https://github.com/serbekun/inahosai_server"
   # Text of that link.
   repo_label: "GITHUB"
   # Credit shown at the end of the footer, after the school name.
