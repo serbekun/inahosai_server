@@ -66,7 +66,7 @@ public final class Main {
             setupPage,
             new DebugPages(resourcesService, siteConfig),
             new AdminReload(siteConfigLoader::load, pageRoutes, setupPage),
-            new StaticRoutes(resourcesService)
+            new StaticRoutes(resourcesService, siteConfig)
         );
 
         Javalin svr = Javalin.create();
