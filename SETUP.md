@@ -112,6 +112,11 @@ Replace `school.png` with your own building photo. Note that the shipped file is
 To add a PDF (a programme, a map), drop it in `src/main/resources/pdf/` and link to it
 as `/static/v0/pdf/yourfile.pdf`.
 
+PDFs can be put behind a token. Set `pdf.require_auth: true` and a non-empty
+`pdf.token` in the config; then every PDF request (and the PDF directory listing) must
+carry `?token=...`, e.g. `/static/v0/pdf/programme.pdf?token=SECRET`. A missing or wrong
+token returns `401`. With `require_auth: false`, or with an empty token, PDFs stay public.
+
 ## 7. Running
 
 ```sh

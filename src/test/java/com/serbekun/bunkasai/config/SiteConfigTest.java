@@ -190,4 +190,26 @@ class SiteConfigTest {
     }
 
     // endregion
+
+    // region pdf block
+
+    @Test
+    void pdfDefaultsToNoAuthAndNoToken() {
+        SiteConfig config = SiteConfigLoader.emptyConfig();
+        assertThat(config.pdf().requireAuth()).isFalse();
+        assertThat(config.pdf().token()).isEmpty();
+    }
+
+    @Test
+    void pdfAuthCanBeRequiredWithAToken() {
+        SiteConfig config = loader.parse("""
+                pdf:
+                  require_auth: true
+                  token: "  SECRET  "
+                """);
+        assertThat(config.pdf().requireAuth()).isTrue();
+        assertThat(config.pdf().token()).isEqualTo("SECRET");
+    }
+
+    // endregion
 }

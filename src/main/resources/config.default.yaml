@@ -147,10 +147,22 @@ debug:
   # even on a production deployment.
   #
   # Note: turning this on (or off) takes effect at startup only, like the page routes.
-  enabled: false
+  enabled: true
   # When set, /debug/* responds only to a request that passes this as the "token" query
   # parameter (e.g. /debug/point_text.html?token=SECRET). Leave empty for no token. A
   # public deployment that shares a playground should usually set one.
+  token: ""
+
+pdf:
+  # Gate for the PDF files under resources/pdf/, served at /static/v0/pdf/*.
+  #
+  # When require_auth is true, every PDF request (and the PDF directory listing) must
+  # present pdf.token as the "token" query parameter, e.g.
+  # /static/v0/pdf/leaflet.pdf?token=SECRET. A missing or wrong token gets 401.
+  #
+  # Set a token whenever require_auth is true; an empty token leaves the PDFs open.
+  # Turning this on or off takes effect at startup only.
+  require_auth: false
   token: ""
 
 pages:

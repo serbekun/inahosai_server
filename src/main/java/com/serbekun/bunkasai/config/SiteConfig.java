@@ -36,7 +36,8 @@ public record SiteConfig(
         Graph graph,
         Site site,
         List<Page> pages,
-        Debug debug) {
+        Debug debug,
+        Pdf pdf) {
 
     private static final Logger log = LoggerFactory.getLogger(SiteConfig.class);
 
@@ -56,6 +57,7 @@ public record SiteConfig(
                         null);
         pages = copyOf(pages);
         debug = debug != null ? debug : new Debug(false, "");
+        pdf = pdf != null ? pdf : new Pdf(false, "");
     }
 
     /** The school the festival belongs to. */
@@ -187,6 +189,24 @@ public record SiteConfig(
      */
     public record Debug(boolean enabled, String token) {
         public Debug {
+            token = str(token);
+        }
+    }
+
+    /**
+     * Opt-in gate for the PDF resources under {@code /static/v0/pdf/*}.
+     *
+     * <p>When {@code requireAuth} is true every PDF request must present {@code token}
+     * as the {@code token} query parameter, e.g. {@code /static/v0/pdf/leaflet.pdf?token=SECRET}.
+     * The same gate covers the PDF directory listing, so file names do not leak either.
+     * When {@code requireAuth} is false, or when no token is set, PDFs are served as
+     * before.
+     *
+     * @param requireAuth whether PDF requests must carry the token
+     * @param token       the token a request must present; blank means the gate is inert
+     */
+    public record Pdf(boolean requireAuth, String token) {
+        public Pdf {
             token = str(token);
         }
     }
