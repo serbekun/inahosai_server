@@ -41,7 +41,7 @@ festival:
   # values stay plain text and are escaped like every other config value.
   concept_lead:
     - "稲穂祭は、ひとつのことばから広がっていく。"
-    - "時間を、学びを、場所を、世界を——。"
+    - "時間を、学びを、場所を、世代を——。"
 
 hero:
   # Filename inside resources/images/ used as the hero backdrop. A bare filename,
@@ -116,7 +116,7 @@ graph:
       at: [0.72, 0.75]
       leaves: ["みんなの投稿。"]
       leaf_at: [[0.88, 0.62], [0.87, 0.90], [0.66, 0.93]]
-      url: "/sekai"
+      url: "/sedai"
 
 site:
   # Where static assets are mounted. Must start with "/" and contain no "..".
@@ -223,12 +223,12 @@ pages:
     description: "場所をつなぐ 稲穂祭 — つなぐ"
     hero_dots_text: "場所をつなぐ"
     footer_word: "場所をつなぐ"
-  - key: "sekai"
-    route: "/sekai"
-    template: "sekai.html"
-    nav_label: "世界"
-    nav_title: "世界 — 交流・世界"
-    title: "世界をつなぐ — 稲穂祭"
-    description: "世界をつなぐ 稲穂祭 — つなぐ"
-    hero_dots_text: "世界をつなぐ"
-    footer_word: "世界をつなぐ"
+  - key: "sedai"
+    route: "/sedai"
+    template: "sedai.html"
+    nav_label: "世代"
+    nav_title: "世代— 交流・世界"
+    title: "世代つなぐ — 稲穂祭"
+    description: "世代つなぐ 稲穂祭 — つなぐ"
+    hero_dots_text: "世代つなぐ"
+    footer_word: "世代つなぐ"
