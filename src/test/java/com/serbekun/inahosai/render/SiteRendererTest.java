@@ -159,7 +159,17 @@ class SiteRendererTest {
 
     @Test
     void anUnsetWorkUrlProducesNoAnchorElement() {
-        String html = render(defaultConfig(), "/manabi");
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                works:
+                  items:
+                    - {title: "書道作品", description: "d", url: ""}
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        String html = render(config, "/manabi");
 
         assertThat(html).contains("書道作品");
         assertThat(html).doesNotContain("branchmap__btn");

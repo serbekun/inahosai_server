@@ -3,6 +3,10 @@
 build/
 target/
 
+# Runtime content: templates unpacked on first run and private files (PDFs, photos)
+# dropped in by the operator. Never commit this — it is not source.
+data/
+
 # IntelliJ IDEA
 .idea/
 *.iml

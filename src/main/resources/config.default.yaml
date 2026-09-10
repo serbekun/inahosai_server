@@ -13,6 +13,11 @@
 # Nothing in this file is secret. Never put tokens or connection strings here.
 # ---------------------------------------------------------------------------
 
+# Set this to true only after you have read the whole file and confirmed every value
+# fits your school. The server REFUSES TO START while it is false, so that a fork
+# cannot go live still carrying the default school by accident.
+is_setup_readed_and_config_edited: false
+
 school:
   # Full school name in Japanese. Required.
   name_ja: "茎崎"
@@ -44,7 +49,7 @@ festival:
     - "時間を、学びを、場所を、世代を——。"
 
 hero:
-  # Filename inside resources/images/ used as the hero backdrop. A bare filename,
+  # Filename inside the images directory used as the hero backdrop. A bare filename,
   # not a path. Leave empty to render no <img> at all — the hero works without one.
   photo: "school.png"
   # Fallback text drawn as particles on the hero canvas. Each page overrides this
@@ -69,16 +74,20 @@ stream:
 works:
   # Student works listed on the 学び page. An item with an empty url renders no
   # button at all, rather than a dead link.
+  #
+  # Every item ships pointing at the placeholder PDF so each button downloads
+  # something out of the box. Replace the urls with your own documents (dropped into
+  # data/static/pdf/) or real external links.
   items:
     - title: "書道作品"
       description: "一画一画に心を込めて書き上げた、力強く美しい作品です。"
-      url: ""
+      url: "/static/v0/pdf/sample.pdf"
     - title: "美術作品"
       description: "想像力と表現力を生かして描いた、色あざやかな作品です。"
-      url: ""
+      url: "/static/v0/pdf/sample.pdf"
     - title: "英語自己紹介カード"
       description: "自分のことを英語で紹介！個性あふれる自己紹介カードです。"
-      url: ""
+      url: "/static/v0/pdf/sample.pdf"
 
 graph:
   # The theme graph drawn by graph.js on the home, 場所 and 世界 pages.
@@ -129,10 +138,10 @@ site:
   gate_url: ""
   # Text of that link.
   gate_label: "つながり門"
-  # Filename inside resources/images/ for the iOS home-screen icon. Leave empty to
+  # Filename inside the images directory for the iOS home-screen icon. Leave empty to
   # omit the tag — an unset icon must not become a 404 on every page.
   apple_touch_icon: ""
-  # Filename inside resources/images/ used for link previews. Falls back to
+  # Filename inside the images directory used for link previews. Falls back to
   # hero.photo when empty.
   og_image: ""
   # Source repository, linked from the footer next to the MIT licence note. A fork
@@ -163,11 +172,11 @@ debug:
   token: ""
 
 pdf:
-  # Gate for the PDF files under resources/pdf/, served at /static/v0/pdf/*.
+  # Gate for the PDF files in the on-disk pdf directory, served at /static/v0/pdf/*.
   #
   # When require_auth is true, every PDF request (and the PDF directory listing) must
   # present pdf.token as the "token" query parameter, e.g.
-  # /static/v0/pdf/leaflet.pdf?token=SECRET. A missing or wrong token gets 401.
+  # /static/v0/pdf/sample.pdf?token=SECRET. A missing or wrong token gets 401.
   #
   # Set a token whenever require_auth is true; an empty token leaves the PDFs open.
   # Turning this on or off takes effect at startup only.

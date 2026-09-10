@@ -18,11 +18,8 @@ public final class ResourcesBasePath {
     public static final String BASE_CSS_PATH = "css/";
     public static final String BASE_JS_PATH = "js/";
 
-    public static final String BASE_SVG_PATH = "svg/";
     public static final String BASE_IMAGES_PATH = "images/";
-    public static final String BASE_JSON_PATH = "json/";
     public static final String BASE_PDF_PATH = "pdf/";
-    public static final String BASE_DOMAIN_PATH = "domain/";
 
     /**
      * Resolves the full path for an HTML resource.
@@ -57,10 +54,6 @@ public final class ResourcesBasePath {
         return resolve(BASE_JS_PATH, filename);
     }
 
-    public static String resolveSvgPath(String filename) {
-        return resolve(BASE_SVG_PATH, filename);
-    }
-    
     /**
      * Resolves the full path for an image resource.
      *
@@ -74,15 +67,6 @@ public final class ResourcesBasePath {
     public static String resolvePdfPath(String filename) {
         return resolve(BASE_PDF_PATH, filename);
     }
-
-    public static String resolveDomainPath(String filename) {
-        return resolve(BASE_DOMAIN_PATH, filename);
-    }
-
-    public static String resolveJsonPath(String filename) {
-        return resolve(BASE_JSON_PATH, filename);
-    }
-
 
     /**
      *
