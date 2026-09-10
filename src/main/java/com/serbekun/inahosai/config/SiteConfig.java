@@ -29,6 +29,7 @@ import com.serbekun.inahosai.resources.ResourcesBasePath;
  * {@link SiteConfigLoader}.
  */
 public record SiteConfig(
+        boolean isSetupReadedAndConfigEdited,
         School school,
         Festival festival,
         Hero hero,
