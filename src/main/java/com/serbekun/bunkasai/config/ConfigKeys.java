@@ -107,7 +107,14 @@ public final class ConfigKeys {
                     false, c -> c.debug().enabled()),
             new Key("debug.token",
                     "Optional gate for /debug/*. Set one when sharing a playground publicly.",
-                    false, c -> !c.debug().token().isEmpty()));
+                    false, c -> !c.debug().token().isEmpty()),
+
+            new Key("pdf.require_auth",
+                    "Require a token before serving /static/v0/pdf/*. Off by default.",
+                    false, c -> c.pdf().requireAuth()),
+            new Key("pdf.token",
+                    "Token a PDF request must present when pdf.require_auth is true.",
+                    false, c -> !c.pdf().token().isEmpty()));
 
     /**
      * The catalogue.

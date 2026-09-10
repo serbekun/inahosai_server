@@ -108,7 +108,8 @@ class PageRoutesTest {
         JavalinTest.test(defaultApp(), (server, client) -> {
             ResourcesService resources =
                     new ResourcesService(new ResourceCache(new ResourceLoader()));
-            new com.serbekun.bunkasai.http.handles.StaticRoutes(resources).register(server);
+            new com.serbekun.bunkasai.http.handles.StaticRoutes(resources, loader.loadBundledDefault())
+                    .register(server);
 
             assertThat(client.get("/static/v0/html/index.html").code()).isEqualTo(404);
             assertThat(client.get("/static/v0/html/point_text.html").code()).isEqualTo(404);

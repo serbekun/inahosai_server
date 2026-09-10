@@ -1,5 +1,6 @@
 package com.serbekun.bunkasai.http.handles;
 
+import com.serbekun.bunkasai.config.SiteConfig;
 import com.serbekun.bunkasai.http.handles.statics.StaticV0Http;
 import com.serbekun.bunkasai.http.handles.statics.StaticV0Http.StaticResource;
 import com.serbekun.bunkasai.service.resource.ResourcesService;
@@ -24,8 +25,8 @@ public class StaticRoutes implements HttpHandler {
 
     private final StaticV0Http staticV0Http;
 
-    public StaticRoutes(ResourcesService resourcesService) {
-        this.staticV0Http = new StaticV0Http(resourcesService);
+    public StaticRoutes(ResourcesService resourcesService, SiteConfig config) {
+        this.staticV0Http = new StaticV0Http(resourcesService, config);
     }
 
     @Override
