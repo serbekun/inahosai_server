@@ -13,7 +13,7 @@ cp src/main/resources/config.default.yaml config.yaml
 
 The server looks for a config in this order:
 
-1. the file named by the `BUNKASAI_CONFIG` environment variable
+1. the file named by the `INAHOSAI_CONFIG` environment variable
 2. `./config.yaml` in the working directory
 3. the bundled `config.default.yaml` from inside the jar
 
@@ -39,9 +39,9 @@ Until all three are set, every page shows a banner reading
 `このサイトはまだ設定されていません — SETUP.md を参照してください`, and the server logs a
 warning at startup listing what is missing.
 
-Run with `BUNKASAI_ENV=dev` and open `/setup` for a checklist of every key, whether it
+Run with `INAHOSAI_ENV=dev` and open `/setup` for a checklist of every key, whether it
 is set, and what it controls. That page prints key names and status only — never
-values — and the route does not exist unless `BUNKASAI_ENV=dev`.
+values — and the route does not exist unless `INAHOSAI_ENV=dev`.
 
 ### About `festival.start_date`
 
@@ -73,6 +73,22 @@ Note that Java renders the first year of an era as `令和1年`, not `令和元�
   generated from this list, so the navigation is identical on every page.
 - `graph` — the theme words on the home, 場所 and 世界 pages.
 
+### Live stream
+
+Pick the platform with `stream.type` (`"youtube"` or `"zoom"`) and fill the matching
+payload:
+
+- `stream.youtube_id` — the 11 characters after `v=` in a YouTube URL, **not** the URL.
+- `stream.zoom_url` — the full `https://...` Zoom meeting link.
+
+Leave `stream.type` blank to infer it from whichever payload is set, so a config that
+only fills `youtube_id` keeps working. A selected platform with no usable payload counts
+as no stream.
+
+`GET /api/v0/live/type/` reports the effective platform, e.g. `{"type":"youtube"}`
+(also `"zoom"` or `"none"`). The backend supports both platforms; the bundled frontend
+still only renders the YouTube embed.
+
 ## 4. Anything unset hides its element
 
 An unconfigured fork must never show a dead link or a broken image. So:
@@ -84,7 +100,7 @@ An unconfigured fork must never show a dead link or a broken image. So:
 - no `site.author` → the footer credits the school alone
 - no `site.author_url` or `site.school_url` → that name stays plain text, not a link
 - no `site.apple_touch_icon` → the tag is omitted rather than pointing at a 404
-- a malformed `stream.youtube_id` → treated as no stream, and logged
+- a malformed `stream.youtube_id` or `stream.zoom_url` → treated as no stream, and logged
 
 ## 5. The theme graph
 
@@ -121,7 +137,7 @@ token returns `401`. With `require_auth: false`, or with an empty token, PDFs st
 
 ```sh
 ./gradlew run                    # production mode: /setup is not registered
-BUNKASAI_ENV=dev ./gradlew run   # development mode: /setup is available
+INAHOSAI_ENV=dev ./gradlew run   # development mode: /setup is available
 ```
 
 The server listens on port 2323. Pages are served at `/`, `/jikan`, `/manabi`,
@@ -129,7 +145,7 @@ The server listens on port 2323. Pages are served at `/`, `/jikan`, `/manabi`,
 
 Every page is rendered once at startup and held in memory. Editing a template or the
 config therefore needs a restart — or a call to `/api/v0/admin/reload`, which is only
-registered when `BUNKASAI_ADMIN_TOKEN` is set.
+registered when `INAHOSAI_ADMIN_TOKEN` is set.
 
 ## 8. Licence
 

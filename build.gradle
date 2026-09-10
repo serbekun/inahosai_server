@@ -25,7 +25,7 @@ tasks.register('generateVersionProperties') {
     inputs.property('version', projectVersion)
     outputs.dir(outputDir)
     doLast {
-        def file = outputDir.get().file('com/serbekun/bunkasai/version.properties').asFile
+        def file = outputDir.get().file('com/serbekun/inahosai/version.properties').asFile
         file.parentFile.mkdirs()
         file.text = "version=${projectVersion}\n"
     }
