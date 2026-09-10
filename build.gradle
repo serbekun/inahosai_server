@@ -54,7 +54,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.serbekun.Main'd
+    mainClass = 'com.serbekun.Main'
 }
 
 tasks.withType(Test).configureEach {
