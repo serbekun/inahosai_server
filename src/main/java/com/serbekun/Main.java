@@ -18,8 +18,10 @@ import com.serbekun.inahosai.http.handles.StaticRoutes;
 import com.serbekun.inahosai.http.handles.V0Health;
 import com.serbekun.inahosai.http.handles.V0LiveType;
 import com.serbekun.inahosai.render.SiteRenderer;
+import com.serbekun.inahosai.resources.LookupOrder;
 import com.serbekun.inahosai.resources.ResourceCache;
 import com.serbekun.inahosai.resources.ResourceLoader;
+import com.serbekun.inahosai.resources.ResourceUnpacker;
 import com.serbekun.inahosai.service.resource.ResourcesService;
 
 import io.javalin.Javalin;
@@ -34,22 +36,31 @@ public final class Main {
         log.info("Ver: " + BuildInfo.version());
 
         /**
-         * 3. Resource layer (loader -> cache -> service)
+         * 3. Resource layer.
+         *
+         * The JAR holds templates only. On first run they are copied to the on-disk
+         * working directory, and from then on the server reads the disk and nothing else,
+         * so private files (PDFs and the like) never have a packaged counterpart.
          */
-        ResourceLoader resourceLoader = new ResourceLoader();
-        log.info("Resource override root: {}", resourceLoader.overrideRoot());
+        ResourceLoader resourceLoader = new ResourceLoader(
+                ResourceLoader.DEFAULT_OVERRIDE_ROOT, LookupOrder.DISK_ONLY);
+        log.info("Resource root: {} (disk only)", resourceLoader.overrideRoot());
+        new ResourceUnpacker(resourceLoader, BuildInfo.version()).unpack();
+
         ResourceCache resourceCache = new ResourceCache(resourceLoader);
         ResourcesService resourcesService = new ResourcesService(resourceCache);
 
         /**
          * 4. Site config and page rendering.
          *
-         * Every page is rendered here, once, and held as bytes for the life of the
-         * process. Rendering five pages takes milliseconds, so there is no reason to
-         * defer it to the first request.
+         * The config has to be confirmed by a human before the site is served: a fork
+         * that still carries the default school must not go live by accident. This check
+         * runs after unpacking so the on-disk templates exist even when we refuse to
+         * start.
          */
         SiteConfigLoader siteConfigLoader = new SiteConfigLoader();
         SiteConfig siteConfig = siteConfigLoader.load();
+        requireConfirmedConfig(siteConfig);
         warnAboutMissingConfig(siteConfig);
 
         SiteRenderer siteRenderer = new SiteRenderer(resourcesService);
@@ -73,6 +84,26 @@ public final class Main {
         InitHttp initHttp = new InitHttp(svr, 2323, handlers);
         initHttp.initHttp();
 
+    }
+
+    /**
+     * Refuses to start until a human has confirmed the config fits this school.
+     *
+     * <p>The bundled default is a working site for another school, so serving it on
+     * purpose would be a silent mistake. The gate is one explicit boolean a forker sets
+     * after reading the file, and it is checked before any route is registered.
+     *
+     * @param config the loaded config
+     */
+    private static void requireConfirmedConfig(SiteConfig config) {
+        if (config.isSetupReadedAndConfigEdited()) {
+            return;
+        }
+        log.error("The site config has not been confirmed for this school.");
+        log.error("Open config.yaml, check every value against SETUP.md, then set "
+                + "'is_setup_readed_and_config_edited: true' and start the server again.");
+        log.error("Refusing to start while the bundled default could be served as-is.");
+        System.exit(1);
     }
 
     /**

@@ -37,24 +37,41 @@ public class ResourceLoader {
     public static final Path DEFAULT_OVERRIDE_ROOT = Path.of("data", "static");
 
     private final Path overrideRoot;
+    private final LookupOrder order;
 
-    /** Creates a loader using {@link #DEFAULT_OVERRIDE_ROOT} as the disk root. */
+    /** Creates a disk-first loader using {@link #DEFAULT_OVERRIDE_ROOT} as the disk root. */
     public ResourceLoader() {
         this(DEFAULT_OVERRIDE_ROOT);
     }
 
     /**
-     * Creates a loader with an explicit on-disk override root.
+     * Creates a disk-first loader with an explicit on-disk override root.
      *
      * @param overrideRoot directory holding files that shadow the packaged ones
      */
     public ResourceLoader(Path overrideRoot) {
+        this(overrideRoot, LookupOrder.DISK_FIRST);
+    }
+
+    /**
+     * Creates a loader with an explicit on-disk override root and lookup order.
+     *
+     * @param overrideRoot directory holding the on-disk resources
+     * @param order        where and in what order a lookup checks disk and classpath
+     */
+    public ResourceLoader(Path overrideRoot, LookupOrder order) {
         this.overrideRoot = overrideRoot.toAbsolutePath().normalize();
+        this.order = order != null ? order : LookupOrder.DISK_FIRST;
     }
 
     /** The absolute, normalized directory disk lookups are confined to. */
     public Path overrideRoot() {
         return overrideRoot;
+    }
+
+    /** The order this loader resolves disk and classpath resources in. */
+    public LookupOrder order() {
+        return order;
     }
 
     /**
@@ -69,17 +86,78 @@ public class ResourceLoader {
             return null;
         }
 
-        // check exist resource in disk
-        Path file = resolveOnDisk(path);
-        if (file != null) {
-            try {
-                return Files.readAllBytes(file);
-            } catch (IOException e) {
-                log.error("Failed to read resource from disk: {}", file, e);
+        switch (order) {
+            case DISK_FIRST -> {
+                byte[] disk = loadFromDisk(path);
+                if (disk != null) {
+                    return disk;
+                }
+                return loadFromClasspath(path);
             }
+            case CLASSPATH_FIRST -> {
+                byte[] cp = loadFromClasspath(path);
+                if (cp != null) {
+                    return cp;
+                }
+                return loadFromDisk(path);
+            }
+            case DISK_ONLY -> {
+                return loadFromDisk(path);
+            }
+            default -> throw new IllegalStateException("Unhandled lookup order " + order);
         }
+    }
 
-        // if resource don't exist in disk try to read from jar file
+    /**
+     * Checks whether a resource exists under the configured {@link LookupOrder}.
+     *
+     * @param path the path to the resource
+     * @return true if the resource exists, false otherwise
+     */
+    public boolean exists(String path) {
+        if (!isSafeResourcePath(path)) {
+            return false;
+        }
+        return switch (order) {
+            case DISK_ONLY -> resolveOnDisk(path) != null;
+            case DISK_FIRST -> resolveOnDisk(path) != null || existsOnClasspath(path);
+            case CLASSPATH_FIRST -> existsOnClasspath(path) || resolveOnDisk(path) != null;
+        };
+    }
+
+    /**
+     * Reads a resource from disk.
+     *
+     * @param path the resource path
+     * @return the bytes, or null when the file is absent or unreadable
+     */
+    private byte[] loadFromDisk(String path) {
+        Path file = resolveOnDisk(path);
+        if (file == null) {
+            return null;
+        }
+        try {
+            return Files.readAllBytes(file);
+        } catch (IOException e) {
+            log.error("Failed to read resource from disk: {}", file, e);
+            return null;
+        }
+    }
+
+    /**
+     * Reads a resource from the classpath (directory or JAR).
+     *
+     * <p>Public so the first-run unpacker can copy the packaged templates out without
+     * going through the cache or the disk root.
+     *
+     * @param path the resource path
+     * @return the bytes, or null when the resource is absent
+     */
+    public byte[] loadFromClasspath(String path) {
+        if (!isSafeResourcePath(path)) {
+            log.warn("Rejected unsafe resource path: {}", path);
+            return null;
+        }
         try (InputStream is = getResourceAsStream(path)) {
             if (is == null) {
                 log.debug("Resource not found: {}", path);
@@ -92,21 +170,7 @@ public class ResourceLoader {
         }
     }
 
-    /**
-     * Checks if a resource exists on disk or on the classpath.
-     *
-     * @param path the path to the resource
-     * @return true if the resource exists, false otherwise
-     */
-    public boolean exists(String path) {
-        if (!isSafeResourcePath(path)) {
-            return false;
-        }
-        // check in disk
-        if (resolveOnDisk(path) != null) {
-            return true;
-        }
-        // check in jar file
+    private boolean existsOnClasspath(String path) {
         try (InputStream is = getResourceAsStream(path)) {
             return is != null;
         } catch (IOException e) {
@@ -203,10 +267,41 @@ public class ResourceLoader {
             return List.of();
         }
 
+        // A disk-only deployment lists disk-only: the classpath is a template source the
+        // unpacker consumed at startup, not a live second tree.
+        if (order == LookupOrder.DISK_ONLY) {
+            return listFromDisk(basePath);
+        }
+        if (order == LookupOrder.CLASSPATH_FIRST) {
+            Set<String> merged = new LinkedHashSet<>(listFromClasspath(basePath));
+            merged.addAll(listFromDisk(basePath));
+            return merged.stream().sorted().toList();
+        }
+
         Set<String> merged = new LinkedHashSet<>(listFromDisk(basePath));
         merged.addAll(listFromClasspath(basePath));
 
         return merged.stream().sorted().toList();
+    }
+
+    /**
+     * Lists the resources packaged in the classpath (directory or JAR) only.
+     *
+     * <p>Public so the first-run unpacker can enumerate the templates to copy without
+     * merging in the destination directory it is about to write to.
+     *
+     * @param basePath directory to list, with or without a trailing slash
+     * @return distinct, sorted resource paths
+     */
+    public List<String> listClasspath(String basePath) {
+        if (!basePath.endsWith("/")) {
+            basePath += "/";
+        }
+        if (!isSafeResourcePath(basePath)) {
+            log.warn("Rejected unsafe resource path: {}", basePath);
+            return List.of();
+        }
+        return listFromClasspath(basePath);
     }
 
     /**
@@ -300,17 +395,21 @@ public class ResourceLoader {
     }
 
     /**
-     * Lists files in a directory on the filesystem.
+     * Lists files under a directory on the filesystem, recursively.
+     *
+     * <p>Subdirectories are kept in the result (e.g. {@code html/partials/head.html}) so
+     * that a directory-backed classpath lists the same files a JAR does, which is what
+     * lets the unpacker copy partials from a development build.
      *
      * @param dir      directory path
      * @param basePath base path prefix to use for results
      * @return list of resource paths
      */
     private List<String> listFromDirectory(Path dir, String basePath) {
-        try (var stream = Files.walk(dir, 1)) {
+        try (var stream = Files.walk(dir)) {
             return stream
                     .filter(Files::isRegularFile)
-                    .map(p -> basePath + p.getFileName().toString())
+                    .map(p -> basePath + dir.relativize(p).toString().replace('\\', '/'))
                     .toList();
         } catch (IOException e) {
             log.error("Failed to list directory {}", dir, e);

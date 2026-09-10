@@ -13,11 +13,17 @@ cp src/main/resources/config.default.yaml config.yaml
 
 The server looks for a config in this order:
 
-1. the file named by the `INAHOSAI_CONFIG` environment variable
-2. `./config.yaml` in the working directory
-3. the bundled `config.default.yaml` from inside the jar
+1. the file named by the `-Dinahosai.config` system property
+2. the file named by the `INAHOSAI_CONFIG` environment variable
+3. `./config.yaml` in the working directory
+4. the bundled `config.default.yaml` from inside the jar
 
 It logs which one it used at startup.
+
+The bundled default carries `is_setup_readed_and_config_edited: false`, and while it is
+false the server **refuses to start** with a message asking you to check the config. Read
+every value, make it fit your school, then set that key to `true` in your `config.yaml`.
+This is what stops a fork from going live still showing the default school.
 
 **A typo is a startup error, not a silent default.** Unknown keys are rejected, so
 `nmae_ja` stops the server with a message naming the key rather than quietly leaving
@@ -118,20 +124,26 @@ Each branch carries its own `url`, so a branch and its destination cannot drift 
 
 ## 6. Images
 
-Images live in `src/main/resources/images/` and are referenced by **filename only**, not
-by path — `school.png`, not `images/school.png`. A name containing a slash or `..` is
-rejected and the image is treated as absent.
+On first run the server unpacks its bundled templates into `data/static/` and serves
+everything from there; the jar is only the template source and is never read at request
+time afterwards. So images live in `data/static/images/` and are referenced by
+**filename only**, not by path — `school.png`, not `images/school.png`. A name containing
+a slash or `..` is rejected and the image is treated as absent.
 
 Replace `school.png` with your own building photo. Note that the shipped file is about
 5 MB and is loaded on every page; you probably want to compress yours.
 
-To add a PDF (a programme, a map), drop it in `src/main/resources/pdf/` and link to it
-as `/static/v0/pdf/yourfile.pdf`.
+To add a PDF (a programme, a map), drop it in `data/static/pdf/` and link to it as
+`/static/v0/pdf/yourfile.pdf`. The directory ships with a placeholder `sample.pdf` that
+is unpacked on first run, so a download works out of the box; replace it with your own.
 
 PDFs can be put behind a token. Set `pdf.require_auth: true` and a non-empty
 `pdf.token` in the config; then every PDF request (and the PDF directory listing) must
-carry `?token=...`, e.g. `/static/v0/pdf/programme.pdf?token=SECRET`. A missing or wrong
+carry `?token=...`, e.g. `/static/v0/pdf/sample.pdf?token=SECRET`. A missing or wrong
 token returns `401`. With `require_auth: false`, or with an empty token, PDFs stay public.
+
+The `data/` directory is git-ignored and must never be committed: it is where private
+files and operator edits live.
 
 ## 7. Running
 
@@ -140,8 +152,14 @@ token returns `401`. With `require_auth: false`, or with an empty token, PDFs st
 INAHOSAI_ENV=dev ./gradlew run   # development mode: /setup is available
 ```
 
+On the first run the server copies its bundled templates (CSS, JS, page templates and
+images) into `data/static/` and writes a marker there recording the version it unpacked.
+Later runs skip the copy, and an upgraded build only fills in templates that are new in
+that version — files already on disk are never overwritten, so your edits survive. After
+that, the running server reads `data/static/` and nothing else.
+
 The server listens on port 2323. Pages are served at `/`, `/jikan`, `/manabi`,
-`/basho` and `/sekai`; static assets under `/static/v0/`.
+`/basho` and `/sedai`; static assets under `/static/v0/`.
 
 Every page is rendered once at startup and held in memory. Editing a template or the
 config therefore needs a restart — or a call to `/api/v0/admin/reload`, which is only
@@ -155,7 +173,7 @@ The **content** is not covered by that licence and is not yours to reuse. Before
 publishing a fork, replace:
 
 - the school and festival names, and the slogan
-- `images/school.png` and any other photograph
+- `data/static/images/school.png` and any other photograph
 - the CONCEPT text and the theme words
 - the work titles and descriptions in `works.items`
 

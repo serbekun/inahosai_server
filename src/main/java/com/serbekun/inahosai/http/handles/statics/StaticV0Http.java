@@ -164,9 +164,7 @@ public class StaticV0Http {
         CSS(ResourcesBasePath.BASE_CSS_PATH, true),
         IMAGES(ResourcesBasePath.BASE_IMAGES_PATH, true),
         JS(ResourcesBasePath.BASE_JS_PATH, true),
-        JSON(ResourcesBasePath.BASE_JSON_PATH, true),
-        PDF(ResourcesBasePath.BASE_PDF_PATH, true),
-        SVG(ResourcesBasePath.BASE_SVG_PATH, true);
+        PDF(ResourcesBasePath.BASE_PDF_PATH, true);
 
         private final String basePath;
         private final boolean listable;

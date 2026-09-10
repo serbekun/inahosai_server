@@ -145,16 +145,6 @@ public class ResourcesService {
     }
 
     /**
-     * Returns the JSON data for a resource.
-     *
-     * @param name the name of the JSON resource
-     * @return the file content, or null if the name is empty or the file is missing
-     */
-    public String getJson(String name) {
-        return getText(ResourcesBasePath.BASE_JSON_PATH, name);
-    }
-
-    /**
      * Returns the text of a template partial.
      * <p>
      * Partials are build-time template fragments. They are never served over HTTP and
@@ -196,26 +186,6 @@ public class ResourcesService {
      */
     public String getJs(String name) {
         return getText(ResourcesBasePath.BASE_JS_PATH, name);
-    }
-
-    /**
-     * Returns the SVG content for a given resource name.
-     *
-     * @param name the name of the SVG resource
-     * @return the file content, or null if the name is empty or the file is missing
-     */
-    public String getSvg(String name) {
-        return getText(ResourcesBasePath.BASE_SVG_PATH, name);
-    }
-
-    /**
-     * Returns the content of a domain description file.
-     *
-     * @param name the name of the domain resource
-     * @return the file content, or null if the name is empty or the file is missing
-     */
-    public String getDomain(String name) {
-        return getText(ResourcesBasePath.BASE_DOMAIN_PATH, name);
     }
 
     // endregion

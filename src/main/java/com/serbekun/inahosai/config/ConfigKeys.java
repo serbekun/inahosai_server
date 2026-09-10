@@ -33,6 +33,11 @@ public final class ConfigKeys {
                       Predicate<SiteConfig> isSet) {}
 
     private static final List<Key> KEYS = List.of(
+            new Key("is_setup_readed_and_config_edited",
+                    "Set to true once you have read this config and confirmed it fits your school. "
+                            + "The server refuses to start while it is false.",
+                    true, SiteConfig::isSetupReadedAndConfigEdited),
+
             new Key("school.name_ja", "School name in Japanese. Shown in the hero and footer.",
                     true, c -> !c.school().nameJa().isEmpty()),
             new Key("school.name_short", "Short school name. Also the favicon glyph.",

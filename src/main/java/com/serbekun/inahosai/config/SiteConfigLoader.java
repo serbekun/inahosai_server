@@ -19,9 +19,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Finds and parses the site config.
  *
- * <p>Resolution order is {@code $INAHOSAI_CONFIG}, then {@code ./config.yaml}, then the
- * bundled {@code config.default.yaml} from the classpath. Whichever wins is logged, so a
- * fork can always tell which file the running site is actually reading.
+ * <p>Resolution order is {@code -Dinahosai.config}, then {@code $INAHOSAI_CONFIG}, then
+ * {@code ./config.yaml}, then the bundled {@code config.default.yaml} from the classpath.
+ * Whichever wins is logged, so a fork can always tell which file the running site is
+ * actually reading.
  *
  * <p>Unknown keys fail loudly. A typo in a fork's config should stop the server at
  * startup with a message naming the key, not silently leave a value at its default —
@@ -33,6 +34,13 @@ public final class SiteConfigLoader {
 
     /** Environment variable naming an explicit config file. */
     public static final String CONFIG_ENV = "INAHOSAI_CONFIG";
+
+    /**
+     * System property naming an explicit config file. Takes precedence over
+     * {@link #CONFIG_ENV}; useful for launching with {@code -Dinahosai.config=...} and for
+     * tests, which cannot set environment variables in the running JVM.
+     */
+    public static final String CONFIG_PROPERTY = "inahosai.config";
 
     /** Config file looked for in the working directory. */
     public static final String LOCAL_CONFIG = "config.yaml";
@@ -65,6 +73,17 @@ public final class SiteConfigLoader {
      * @throws IllegalStateException if the chosen source cannot be read or parsed
      */
     public SiteConfig load() {
+        String fromProperty = System.getProperty(CONFIG_PROPERTY);
+        if (fromProperty != null && !fromProperty.isBlank()) {
+            Path path = Path.of(fromProperty);
+            if (!Files.isRegularFile(path)) {
+                throw new IllegalStateException(
+                        CONFIG_PROPERTY + " points at '" + fromProperty
+                                + "', which is not a readable file");
+            }
+            return loadFile(path);
+        }
+
         String fromEnv = System.getenv(CONFIG_ENV);
         if (fromEnv != null && !fromEnv.isBlank()) {
             Path path = Path.of(fromEnv);
@@ -181,6 +200,6 @@ public final class SiteConfigLoader {
      * @return an empty config
      */
     public static SiteConfig emptyConfig() {
-        return new SiteConfig(null, null, null, null, null, null, null, null, null, null);
+        return new SiteConfig(false, null, null, null, null, null, null, null, null, null, null);
     }
 }
