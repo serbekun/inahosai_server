@@ -37,13 +37,13 @@ class DebugPagesTest {
     @Test
     void theMountIsNotRegisteredWhileDisabled() {
         JavalinTest.test(appFor(config(false, "")), (server, client) ->
-                assertThat(client.get("/debug/point_text.html").code()).isEqualTo(404));
+                assertThat(client.get("/api/v0/debug/point_text.html").code()).isEqualTo(404));
     }
 
     @Test
     void aPlaygroundFileIsServedWhenEnabled() {
         JavalinTest.test(appFor(config(true, "")), (server, client) -> {
-            var response = client.get("/debug/point_text.html");
+            var response = client.get("/api/v0/debug/point_text.html");
 
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains("Point Text");
@@ -53,7 +53,7 @@ class DebugPagesTest {
     @Test
     void playgroundFilesAreServedAsUtf8HtmlAndNotCached() {
         JavalinTest.test(appFor(config(true, "")), (server, client) -> {
-            var response = client.get("/debug/point_text.html");
+            var response = client.get("/api/v0/debug/point_text.html");
 
             assertThat(response.header("Content-Type"))
                     .startsWith("text/html").contains("charset=utf-8");
@@ -64,35 +64,35 @@ class DebugPagesTest {
     @Test
     void aConfiguredPageTemplateIsNotServedRaw() {
         JavalinTest.test(appFor(config(true, "")), (server, client) ->
-                assertThat(client.get("/debug/index.html").code()).isEqualTo(404));
+                assertThat(client.get("/api/v0/debug/index.html").code()).isEqualTo(404));
     }
 
     @Test
     void theNotFoundAndSetupTemplatesAreNotServedRaw() {
         JavalinTest.test(appFor(config(true, "")), (server, client) -> {
-            assertThat(client.get("/debug/404.html").code()).isEqualTo(404);
-            assertThat(client.get("/debug/setup.html").code()).isEqualTo(404);
+            assertThat(client.get("/api/v0/debug/404.html").code()).isEqualTo(404);
+            assertThat(client.get("/api/v0/debug/setup.html").code()).isEqualTo(404);
         });
     }
 
     @Test
     void aMissingOrNonHtmlFileIsNotFound() {
         JavalinTest.test(appFor(config(true, "")), (server, client) -> {
-            assertThat(client.get("/debug/nope.html").code()).isEqualTo(404);
-            assertThat(client.get("/debug/styles.css").code()).isEqualTo(404);
+            assertThat(client.get("/api/v0/debug/nope.html").code()).isEqualTo(404);
+            assertThat(client.get("/api/v0/debug/styles.css").code()).isEqualTo(404);
         });
     }
 
     @Test
     void aTokenGateRefusesRequestsWithoutTheToken() {
         JavalinTest.test(appFor(config(true, "SECRET")), (server, client) ->
-                assertThat(client.get("/debug/point_text.html").code()).isEqualTo(404));
+                assertThat(client.get("/api/v0/debug/point_text.html").code()).isEqualTo(404));
     }
 
     @Test
     void aTokenGateServesTheFileWithTheRightToken() {
         JavalinTest.test(appFor(config(true, "SECRET")), (server, client) -> {
-            var response = client.get("/debug/point_text.html?token=SECRET");
+            var response = client.get("/api/v0/debug/point_text.html?token=SECRET");
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains("Point Text");
         });
@@ -101,7 +101,7 @@ class DebugPagesTest {
     @Test
     void aTokenGateRefusesAWrongToken() {
         JavalinTest.test(appFor(config(true, "SECRET")), (server, client) ->
-                assertThat(client.get("/debug/point_text.html?token=wrong").code())
+                assertThat(client.get("/api/v0/debug/point_text.html?token=wrong").code())
                         .isEqualTo(404));
     }
 }
