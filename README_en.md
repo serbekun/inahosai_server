@@ -26,7 +26,7 @@ A self-hosted homepage for one 文化祭:
 
 Static files (CSS, JS, images, PDFs) are served under `/static/v0/`. Pages are Mustache templates filled from YAML and **rendered once at process start**, then served as bytes with an ETag.
 
-Stack: Java 21, Javalin 6, jmustache, Jackson YAML. No framework beyond that. Current version: `pre-alpha-2026-09-10`.
+Stack: Java 21, Javalin 6, jmustache, Jackson YAML. No framework beyond that. Current version: `pre-alpha-2026-09-11`.
 
 This release is a config-driven site. There is no user login, no 思い出 board, and **no database to install**. Those come later; the storage choice for them is already decided (see [Philosophy](#philosophy)).
 
@@ -150,14 +150,14 @@ Open [http://127.0.0.1:2323/](http://127.0.0.1:2323/).
 From a Release JAR:
 
 ```sh
-java -jar inahosai_server-pre-alpha-2026-09-10-all.jar
+java -jar inahosai_server-pre-alpha-2026-09-11-all.jar
 ```
 
 From sources:
 
 ```sh
 ./gradlew shadowJar
-java -jar build/libs/inahosai_server-pre-alpha-2026-09-10-all.jar
+java -jar build/libs/inahosai_server-pre-alpha-2026-09-11-all.jar
 ```
 
 Config load order (logged at startup):
