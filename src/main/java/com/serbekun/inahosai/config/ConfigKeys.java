@@ -56,6 +56,9 @@ public final class ConfigKeys {
                     false, c -> c.festival().endDate() != null),
             new Key("festival.concept_lead", "Lines of the CONCEPT paragraph.",
                     false, c -> !c.festival().conceptLead().isEmpty()),
+            new Key("festival.about",
+                    "Extra lines for the visible ABOUT section, after the generated sentence.",
+                    false, c -> !c.festival().about().isEmpty()),
 
             new Key("hero.photo",
                     "Image filename for the hero backdrop. Unset renders no image.",

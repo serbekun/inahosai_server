@@ -20,7 +20,7 @@ class SiteConfigTest {
         assertThat(config.school().nameJa()).isEqualTo("茎崎");
         assertThat(config.festival().name()).isEqualTo("稲穂祭");
         assertThat(config.festival().slogan()).isEqualTo("つなぐ");
-        assertThat(config.festival().startDate()).isEqualTo(LocalDate.of(2026, 1, 1));
+        assertThat(config.festival().startDate()).isEqualTo(LocalDate.of(2026, 9, 18));
         assertThat(config.pages()).hasSize(5);
         assertThat(config.graph().branches()).hasSize(4);
     }
@@ -40,7 +40,7 @@ class SiteConfigTest {
                         org.assertj.core.groups.Tuple.tuple("時間をつなぐ", "/jikan"),
                         org.assertj.core.groups.Tuple.tuple("学びをつなぐ", "/manabi"),
                         org.assertj.core.groups.Tuple.tuple("場所をつなぐ", "/basho"),
-                        org.assertj.core.groups.Tuple.tuple("世界をつなぐ", "/sekai"));
+                        org.assertj.core.groups.Tuple.tuple("世代をつなぐ", "/sedai"));
     }
 
     // endregion

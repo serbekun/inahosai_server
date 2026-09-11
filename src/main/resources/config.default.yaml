@@ -47,6 +47,11 @@ festival:
   concept_lead:
     - "稲穂祭は、ひとつのことばから広がっていく。"
     - "時間を、学びを、場所を、世代を——。"
+  # Extra lines for the visible ABOUT section on the home page. A factual sentence is
+  # generated from school/festival/era/dates/slogan, so these are only for anything
+  # that sentence does not already say. Each entry is one paragraph. Leave empty to
+  # show only the generated text.
+  about: []
 
 hero:
   # Filename inside the images directory used as the hero backdrop. A bare filename,
@@ -130,9 +135,10 @@ graph:
 site:
   # Where static assets are mounted. Must start with "/" and contain no "..".
   static_prefix: "/static/v0"
-  # Public origin, used to build absolute og:url and og:image values for link
-  # previews. Leave empty if the site has no stable public URL yet.
-  base_url: ""
+  # Public origin, used to build absolute og:url, og:image and canonical URLs, and the
+  # sitemap. Leave empty if the site has no stable public URL yet: those tags are then
+  # omitted and /sitemap.xml is not served.
+  base_url: "https://inahosai.serbekun.com"
   # Optional destination for the extra header link that sits left of the nav. When
   # empty the element is not rendered at all, rather than rendered as a dead link.
   gate_url: ""
@@ -165,7 +171,7 @@ debug:
   # even on a production deployment.
   #
   # Note: turning this on (or off) takes effect at startup only, like the page routes.
-  enabled: true
+  enabled: false
   # When set, /debug/* responds only to a request that passes this as the "token" query
   # parameter (e.g. /debug/point_text.html?token=SECRET). Leave empty for no token. A
   # public deployment that shares a playground should usually set one.
@@ -192,8 +198,9 @@ pages:
   # - template:   the file in resources/html/ to render
   # - nav_label:  text in the header nav
   # - nav_title:  tooltip in the header nav
-  # - title:      <title>; "{festival}" is replaced with festival.name
-  # - description: <meta name="description"> and og:description
+  # - title:      <title>; a tiny template, e.g. {{school.nameJa}} {{festival.name}}
+  #               and {{era}} are filled in. Each value is HTML-escaped.
+  # - description: <meta name="description">, og:description and the visible page lead
   # - hero_dots_text: text drawn as particles on the hero canvas
   # - footer_word:    the page's own word, used as the 学び page's hidden heading
   - key: "index"
@@ -201,8 +208,8 @@ pages:
     template: "index.html"
     nav_label: "ホーム"
     nav_title: "ホーム — トップページ"
-    title: "稲穂祭 — つなぐ"
-    description: "茎崎 稲穂祭 — つなぐ"
+    title: "{{school.nameJa}} {{festival.name}}（{{era}}） — {{festival.slogan}}"
+    description: "{{school.nameJa}}の文化祭「{{festival.name}}」（{{era}}）。テーマは「{{festival.slogan}}」。開催日程・展示・会場のご案内。"
     hero_dots_text: "茎崎"
     footer_word: "茎崎"
   - key: "jikan"
@@ -210,8 +217,8 @@ pages:
     template: "jikan.html"
     nav_label: "時間"
     nav_title: "時間 — タイムテーブル"
-    title: "時間をつなぐ — 稲穂祭"
-    description: "時間をつなぐ 稲穂祭 — つなぐ"
+    title: "時間をつなぐ — {{school.nameJa}} {{festival.name}}"
+    description: "{{school.nameJa}} {{festival.name}}の時間（タイムテーブル）。過去・現在・未来をつなぐ発表の予定。"
     hero_dots_text: "時間をつなぐ"
     footer_word: "時間をつなぐ"
   - key: "manabi"
@@ -219,8 +226,8 @@ pages:
     template: "manabi.html"
     nav_label: "学び"
     nav_title: "学び — 展示・発表"
-    title: "学びをつなぐ — 稲穂祭"
-    description: "学びをつなぐ 稲穂祭 — つなぐ"
+    title: "学びをつなぐ — {{school.nameJa}} {{festival.name}}"
+    description: "{{school.nameJa}} {{festival.name}}の学び。書道・美術・英語など、生徒の展示作品を紹介します。"
     hero_dots_text: "学びをつなぐ"
     footer_word: "学びをつなぐ"
   - key: "basho"
@@ -228,8 +235,8 @@ pages:
     template: "basho.html"
     nav_label: "場所"
     nav_title: "場所 — 会場マップ"
-    title: "場所をつなぐ — 稲穂祭"
-    description: "場所をつなぐ 稲穂祭 — つなぐ"
+    title: "場所をつなぐ — {{school.nameJa}} {{festival.name}}"
+    description: "{{school.nameJa}} {{festival.name}}の場所。会場マップとライブ配信のご案内。"
     hero_dots_text: "場所をつなぐ"
     footer_word: "場所をつなぐ"
   - key: "sedai"
@@ -237,7 +244,7 @@ pages:
     template: "sedai.html"
     nav_label: "世代"
     nav_title: "世代— 交流・世界"
-    title: "世代つなぐ — 稲穂祭"
-    description: "世代つなぐ 稲穂祭 — つなぐ"
+    title: "世代をつなぐ — {{school.nameJa}} {{festival.name}}"
+    description: "{{school.nameJa}} {{festival.name}}の世代。みんなの投稿でつながる交流のページ。"
     hero_dots_text: "世代つなぐ"
     footer_word: "世代つなぐ"
