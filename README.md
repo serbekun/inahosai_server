@@ -162,7 +162,7 @@ cp src/main/resources/config.default.yaml config.yaml
 `config.yaml` を編集します。最低限:
 
 - `school.name_ja`、`festival.name`、`festival.start_date` — 必須。そうでなければすべてのページにセットアップバナーが表示されます
-- 日付、スローガン、コンセプト、作品、配信、`site.base_url`（LINE の `og:` タグに必要）
+- 日付、スローガン、コンセプト、作品、配信、`site.base_url`（LINE の `og:` タグ、canonical、`/sitemap.xml` に必要）
 - `site.repo_url` — *自分の*フォークを指します
 - `is_setup_readed_and_config_edited: true` — そうでなければプロセスは終了します
 

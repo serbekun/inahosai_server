@@ -176,6 +176,84 @@ public class SiteRenderer {
     }
 
     /**
+     * Builds the sitemap listing every configured page.
+     *
+     * <p>Requires {@code site.base_url}: a sitemap's {@code <loc>} values must be absolute,
+     * so without a public origin there is no valid sitemap and none is served rather than
+     * one full of relative paths.
+     *
+     * @param config the site config
+     * @return the rendered sitemap, or null when no public origin is configured
+     */
+    public RenderedPage renderSitemap(SiteConfig config) {
+        String baseUrl = config.site().baseUrl();
+        if (baseUrl.isEmpty()) {
+            log.warn("site.base_url is not set; /sitemap.xml will not be served");
+            return null;
+        }
+
+        StringBuilder xml = new StringBuilder();
+        xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xml.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+        for (SiteConfig.Page page : config.pages()) {
+            if (page.route().isEmpty()) {
+                continue;
+            }
+            xml.append("  <url>\n");
+            xml.append("    <loc>").append(xmlEscape(baseUrl + page.route())).append("</loc>\n");
+            xml.append("    <changefreq>weekly</changefreq>\n");
+            xml.append("    <priority>")
+                    .append("/".equals(page.route()) ? "1.0" : "0.8")
+                    .append("</priority>\n");
+            xml.append("  </url>\n");
+        }
+        xml.append("</urlset>\n");
+
+        byte[] body = xml.toString().getBytes(StandardCharsets.UTF_8);
+        return new RenderedPage(body, Etags.of(body), "application/xml; charset=utf-8");
+    }
+
+    /**
+     * Builds {@code robots.txt}, pointing crawlers at the sitemap when one exists.
+     *
+     * <p>The API and the development setup route are kept out of the index: they are not
+     * content and should not compete with the pages. The content-signals block a proxy may
+     * prepend is outside this file's control.
+     *
+     * @param config the site config
+     * @return the rendered robots.txt
+     */
+    public RenderedPage renderRobots(SiteConfig config) {
+        StringBuilder text = new StringBuilder();
+        text.append("User-agent: *\n");
+        text.append("Allow: /\n");
+        text.append("Disallow: /api/v0/\n");
+        text.append("Disallow: /setup\n");
+
+        String baseUrl = config.site().baseUrl();
+        if (!baseUrl.isEmpty()) {
+            text.append("\nSitemap: ").append(baseUrl).append("/sitemap.xml\n");
+        }
+
+        byte[] body = text.toString().getBytes(StandardCharsets.UTF_8);
+        return new RenderedPage(body, Etags.of(body), "text/plain; charset=utf-8");
+    }
+
+    /**
+     * Escapes the five characters that are special in XML text.
+     *
+     * @param value the raw value
+     * @return the escaped value
+     */
+    private static String xmlEscape(String value) {
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
+    }
+
+    /**
      * Marks a page as neither indexable nor shareable, and drops its link-preview URLs.
      *
      * @param model the model to adjust
@@ -186,6 +264,8 @@ public class SiteRenderer {
         model.put("hasOgImage", false);
         model.put("ogUrl", "");
         model.put("ogImage", "");
+        model.put("hasCanonical", false);
+        model.put("canonicalUrl", "");
     }
 
     /**
@@ -226,6 +306,9 @@ public class SiteRenderer {
 
         model.put("era", JapaneseEra.formatOrEmpty(start));
         model.put("year", start != null ? String.valueOf(start.getYear()) : "");
+        model.put("startDateLabel", JapaneseEra.formatMonthDay(start));
+        model.put("hasEndDate", config.festival().endDate() != null);
+        model.put("endDateLabel", JapaneseEra.formatMonthDay(config.festival().endDate()));
         model.put("staticPrefix", staticPrefix);
 
         // The favicon is an inline SVG data URI, so this value lands in a percent-encoded
@@ -274,6 +357,9 @@ public class SiteRenderer {
 
         model.put("nav", nav(config, page));
         model.put("conceptLines", lines(config.festival().conceptLead()));
+        List<Map<String, Object>> aboutLines = aboutLines(config);
+        model.put("aboutLines", aboutLines);
+        model.put("hasAbout", !aboutLines.isEmpty());
         model.put("graphSummary", graphSummary(config.graph()));
 
         List<String> missing = config.missingKeys();
@@ -287,12 +373,18 @@ public class SiteRenderer {
         model.put("description", inline(page.description(), model));
         openGraph(model, config, page);
 
+        // Only the home page carries the event markup, so the same Event is not repeated
+        // on every page of one small site.
+        String structuredData = structuredData(config, page, model);
+        model.put("hasStructuredData", !structuredData.isEmpty());
+        model.put("structuredDataJson", structuredData);
+
         return model;
     }
 
     /**
-     * Adds the link-preview tags. These only work because rendering is server-side: the
-     * LINE crawler that will see them does not execute JavaScript.
+     * Adds the link-preview tags and the canonical URL. These only work because rendering
+     * is server-side: the LINE crawler that will see them does not execute JavaScript.
      *
      * @param model  the model being built, already carrying title and description
      * @param config the site config
@@ -306,6 +398,11 @@ public class SiteRenderer {
         boolean hasBase = !baseUrl.isEmpty();
         model.put("hasOgUrl", hasBase);
         model.put("ogUrl", hasBase ? baseUrl + page.route() : "");
+
+        // A canonical URL has to be absolute, so without a public origin it is omitted
+        // rather than written as a relative path a crawler would have to guess at.
+        model.put("hasCanonical", hasBase);
+        model.put("canonicalUrl", hasBase ? baseUrl + page.route() : "");
 
         // A relative og:image is useless to a crawler, so it is only emitted when the
         // public origin is known.
@@ -389,6 +486,133 @@ public class SiteRenderer {
             lines.add(line);
         }
         return lines;
+    }
+
+    /**
+     * Builds the visible ABOUT prose.
+     *
+     * <p>The first lines are derived from the config rather than typed into a template, so
+     * a fork gets real, indexable text — the school, the festival, the era, the dates and
+     * the theme — without writing it. {@code festival.about} lines are appended, which is
+     * the escape hatch for anything the config does not already say.
+     *
+     * @param config the site config
+     * @return the lines, or an empty list when there is nothing worth saying
+     */
+    private static List<Map<String, Object>> aboutLines(SiteConfig config) {
+        SiteConfig.Festival festival = config.festival();
+        String school = config.school().nameJa();
+        LocalDate start = festival.startDate();
+        LocalDate end = festival.endDate();
+
+        List<String> text = new ArrayList<>();
+        if (!school.isEmpty() && !festival.name().isEmpty()) {
+            String era = JapaneseEra.formatOrEmpty(start);
+            text.add(era.isEmpty()
+                    ? school + "の文化祭「" + festival.name() + "」です。"
+                    : era + "に、" + school + "の文化祭「" + festival.name() + "」を開催します。");
+        } else if (!festival.name().isEmpty()) {
+            text.add("文化祭「" + festival.name() + "」です。");
+        }
+        if (start != null && end != null) {
+            text.add("開催期間は" + JapaneseEra.formatMonthDay(start) + "から"
+                    + JapaneseEra.formatMonthDay(end) + "までです。");
+        } else if (start != null) {
+            text.add("開催日は" + JapaneseEra.formatMonthDay(start) + "です。");
+        }
+        if (!festival.slogan().isEmpty()) {
+            text.add("テーマは「" + festival.slogan() + "」。");
+        }
+        text.addAll(festival.about());
+
+        return lines(text);
+    }
+
+    /**
+     * Builds the schema.org Event markup for the home page.
+     *
+     * <p>Search engines read structured data to understand that this is a dated event at a
+     * place, which is the difference between a blue link and an event result. Only the home
+     * page carries it: repeating the same Event on five pages of one small site adds
+     * nothing.
+     *
+     * @param config the site config
+     * @param page   the page being rendered
+     * @param model  the model, already carrying the rendered description and og:image
+     * @return the JSON-LD string, or an empty string when it cannot or should not be built
+     */
+    private String structuredData(SiteConfig config, SiteConfig.Page page,
+                                  Map<String, Object> model) {
+        if (!"index".equals(page.key()) || config.festival().startDate() == null) {
+            return "";
+        }
+        String school = config.school().nameJa();
+        String festivalName = config.festival().name();
+        String name = (school.isEmpty() ? festivalName : school + " " + festivalName).strip();
+        if (name.isEmpty()) {
+            return "";
+        }
+
+        Map<String, Object> event = new LinkedHashMap<>();
+        event.put("@context", "https://schema.org");
+        event.put("@type", "Event");
+        event.put("name", name);
+        event.put("startDate", config.festival().startDate().toString());
+        if (config.festival().endDate() != null) {
+            event.put("endDate", config.festival().endDate().toString());
+        }
+        event.put("eventStatus", "https://schema.org/EventScheduled");
+        event.put("eventAttendanceMode", "https://schema.org/OfflineEventAttendanceMode");
+        event.put("description", model.get("description"));
+
+        Map<String, Object> location = new LinkedHashMap<>();
+        location.put("@type", "Place");
+        if (!school.isEmpty()) {
+            location.put("name", school);
+        }
+        String baseUrl = config.site().baseUrl();
+        if (!baseUrl.isEmpty()) {
+            location.put("url", baseUrl + "/");
+            event.put("url", baseUrl + "/");
+        }
+        event.put("location", location);
+
+        Object image = model.get("ogImage");
+        if (image instanceof String url && !url.isEmpty()) {
+            event.put("image", url);
+        }
+        if (!school.isEmpty() && !config.site().schoolUrl().isEmpty()) {
+            Map<String, Object> organizer = new LinkedHashMap<>();
+            organizer.put("@type", "Organization");
+            organizer.put("name", school);
+            organizer.put("url", config.site().schoolUrl());
+            event.put("organizer", organizer);
+        }
+
+        return jsonLd(event);
+    }
+
+    /**
+     * Serialises a value as JSON safe to embed in a {@code <script type="application/ld+json">}
+     * element.
+     *
+     * <p>Like the config island, the JSON cannot be HTML-escaped without corrupting it, so
+     * the characters that could close the script element early are escaped as JSON unicode
+     * escapes instead.
+     *
+     * @param value the value to serialise
+     * @return the escaped JSON, or an empty string when serialisation fails
+     */
+    private String jsonLd(Object value) {
+        try {
+            return json.writeValueAsString(value)
+                    .replace("<", "\\u003c")
+                    .replace(">", "\\u003e")
+                    .replace("&", "\\u0026");
+        } catch (Exception e) {
+            log.warn("Could not serialise structured data; omitting it", e);
+            return "";
+        }
     }
 
     /**

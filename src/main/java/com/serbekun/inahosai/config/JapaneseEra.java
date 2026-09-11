@@ -30,6 +30,10 @@ public final class JapaneseEra {
             DateTimeFormatter.ofPattern("GGGGy年", Locale.JAPANESE)
                     .withChronology(JapaneseChronology.INSTANCE);
 
+    /** Month and day in the Japanese order, e.g. {@code 9月18日}. */
+    private static final DateTimeFormatter MONTH_DAY_FORMAT =
+            DateTimeFormatter.ofPattern("M月d日", Locale.JAPANESE);
+
     private JapaneseEra() {}
 
     /**
@@ -50,5 +54,18 @@ public final class JapaneseEra {
      */
     public static String formatOrEmpty(LocalDate date) {
         return date == null ? "" : format(date);
+    }
+
+    /**
+     * Formats a date as its month and day, e.g. {@code 9月18日}.
+     *
+     * <p>Used by the visible ABOUT text, where a full era year would repeat the year
+     * already stated on its own line.
+     *
+     * @param date the date to format, or null when it is not configured
+     * @return the month and day, or an empty string when {@code date} is null
+     */
+    public static String formatMonthDay(LocalDate date) {
+        return date == null ? "" : date.format(MONTH_DAY_FORMAT);
     }
 }

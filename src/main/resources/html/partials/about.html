@@ -1,0 +1,10 @@
+{{#hasAbout}}  <section class="about" id="about">
+    <header class="about__head">
+      <h2 class="about__label">ABOUT</h2>
+      <p class="about__title">{{school.nameJa}} {{festival.name}}</p>
+    </header>
+    <div class="about__body">
+{{#aboutLines}}      <p class="about__text">{{text}}</p>
+{{/aboutLines}}    </div>
+  </section>
+{{/hasAbout}}

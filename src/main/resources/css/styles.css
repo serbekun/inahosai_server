@@ -607,3 +607,77 @@ body {
 .setup__table code { font-size: .95em; word-break: break-all; }
 
 .setup__note { font-size: .8rem; opacity: .7; }
+
+/* ---------------------------------------------------------------------------
+   Visible page lead and ABOUT section.
+
+   Real, indexable prose. The lead repeats the page's own description; the ABOUT
+   block states the school, festival, dates and theme in plain text, so the page
+   is not a canvas with nothing for a search engine to read.
+   --------------------------------------------------------------------------- */
+.page-lead {
+  padding: clamp(28px, 5vh, 60px) clamp(18px, 4vw, 60px) 0;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.page-lead__text {
+  margin: 0 auto;
+  max-width: 42em;
+  text-align: center;
+  font-size: clamp(13px, 1.25vw, 17px);
+  line-height: 2.1;
+  letter-spacing: .1em;
+  color: var(--ink-soft);
+}
+
+.about {
+  padding: clamp(40px, 7vh, 90px) clamp(18px, 4vw, 60px) clamp(60px, 10vh, 120px);
+  max-width: 1360px;
+  margin: 0 auto;
+  border-top: 1px solid var(--ink-faint);
+}
+
+.about__head {
+  text-align: center;
+  margin-bottom: clamp(18px, 3vh, 34px);
+}
+
+.about__label {
+  margin: 0 0 clamp(14px, 2.4vh, 26px);
+  font-family: ui-sans-serif, "Helvetica Neue", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .5em;
+  text-indent: .5em;
+  color: var(--gold);
+}
+
+.about__title {
+  margin: 0;
+  font-size: clamp(20px, 2.6vw, 34px);
+  letter-spacing: .14em;
+  color: var(--ink);
+}
+
+.about__body {
+  max-width: 42em;
+  margin: 0 auto;
+}
+
+.about__text {
+  margin: 0 0 .6em;
+  font-size: clamp(13px, 1.25vw, 17px);
+  line-height: 2.1;
+  letter-spacing: .08em;
+  color: var(--ink-soft);
+}
+
+.works__title {
+  margin: 0 0 clamp(14px, 2.4vh, 26px);
+  text-align: center;
+  font-size: clamp(18px, 2.2vw, 28px);
+  letter-spacing: .14em;
+  color: var(--ink);
+}
+

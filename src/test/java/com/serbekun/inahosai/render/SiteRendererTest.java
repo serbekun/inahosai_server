@@ -37,7 +37,7 @@ class SiteRendererTest {
     @Test
     void rendersEveryConfiguredPageAtItsRoute() {
         assertThat(renderer.renderAll(defaultConfig()))
-                .containsOnlyKeys("/", "/jikan", "/manabi", "/basho", "/sekai");
+                .containsOnlyKeys("/", "/jikan", "/manabi", "/basho", "/sedai");
     }
 
     @Test
@@ -64,13 +64,13 @@ class SiteRendererTest {
 
     @Test
     void everyPageGetsTheSameNavigation() {
-        for (String route : new String[] {"/", "/jikan", "/manabi", "/basho", "/sekai"}) {
+        for (String route : new String[] {"/", "/jikan", "/manabi", "/basho", "/sedai"}) {
             String html = render(defaultConfig(), route);
             assertThat(html).as("nav on %s", route)
                     .contains("href=\"/jikan\"")
                     .contains("href=\"/manabi\"")
                     .contains("href=\"/basho\"")
-                    .contains("href=\"/sekai\"");
+                    .contains("href=\"/sedai\"");
         }
     }
 
@@ -384,10 +384,19 @@ class SiteRendererTest {
     @Test
     void openGraphUrlsAreOmittedWhenThePublicOriginIsUnknown() {
         // A relative og:image is useless to a crawler, so it is better left out.
-        String html = render(defaultConfig(), "/");
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                hero: {photo: "school.png"}
+                pages:
+                  - {key: index, route: "/", template: index.html, title: "T", description: "D"}
+                """);
+
+        String html = render(config, "/");
 
         assertThat(html).doesNotContain("og:url");
         assertThat(html).doesNotContain("og:image");
+        assertThat(html).doesNotContain("rel=\"canonical\"");
     }
 
     @Test
@@ -403,6 +412,171 @@ class SiteRendererTest {
                 """);
 
         assertThat(render(config, "/")).contains("<title>稲穂祭 — つなぐ</title>");
+    }
+
+    // endregion
+
+    // region Canonical
+
+    @Test
+    void aCanonicalUrlIsRenderedWhenThePublicOriginIsKnown() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {base_url: "https://example.com"}
+                pages:
+                  - {key: jikan, route: "/jikan", template: jikan.html}
+                """);
+
+        assertThat(render(config, "/jikan"))
+                .contains("<link rel=\"canonical\" href=\"https://example.com/jikan\">");
+    }
+
+    @Test
+    void anUnsetPublicOriginMakesNoCanonicalTag() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/")).doesNotContain("rel=\"canonical\"");
+    }
+
+    // endregion
+
+    // region Structured data
+
+    @Test
+    void theHomePageCarriesEventStructuredData() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", slogan: "つなぐ",
+                           start_date: "2026-10-03", end_date: "2026-10-04"}
+                site: {base_url: "https://example.com", school_url: "https://school.example"}
+                pages:
+                  - {key: index, route: "/", template: index.html, description: "D"}
+                """);
+
+        String html = render(config, "/");
+
+        assertThat(html)
+                .contains("<script type=\"application/ld+json\">")
+                .contains("\"@type\":\"Event\"")
+                .contains("\"name\":\"茎崎 稲穂祭\"")
+                .contains("\"startDate\":\"2026-10-03\"")
+                .contains("\"endDate\":\"2026-10-04\"")
+                .contains("\"@type\":\"Organization\"");
+    }
+
+    @Test
+    void structuredDataIsOnlyOnTheHomePage() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {base_url: "https://example.com"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                  - {key: jikan, route: "/jikan", template: jikan.html}
+                """);
+
+        assertThat(render(config, "/")).contains("application/ld+json");
+        assertThat(render(config, "/jikan")).doesNotContain("application/ld+json");
+    }
+
+    // endregion
+
+    // region Visible ABOUT text
+
+    @Test
+    void theAboutSectionRendersRealVisibleText() {
+        String html = render(defaultConfig(), "/");
+
+        assertThat(html)
+                .contains("class=\"about\"")
+                .contains("稲穂祭")
+                .contains("令和8年")
+                .contains("9月18日");
+        assertThat(html).doesNotContain("class=\"about\" aria-hidden");
+    }
+
+    @Test
+    void aboutLinesFromTheConfigAreAppended() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03",
+                           about: ["保護者のみなさまのご来場をお待ちしています。"]}
+                site: {base_url: "https://example.com"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/"))
+                .contains("保護者のみなさまのご来場をお待ちしています。");
+    }
+
+    // endregion
+
+    // region Sitemap and robots
+
+    @Test
+    void theSitemapListsEveryConfiguredPageAsAnAbsoluteUrl() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {base_url: "https://example.com"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                  - {key: jikan, route: "/jikan", template: jikan.html}
+                """);
+
+        RenderedPage page = renderer.renderSitemap(config);
+
+        assertThat(page).isNotNull();
+        assertThat(page.contentType()).isEqualTo("application/xml; charset=utf-8");
+        String xml = new String(page.body(), StandardCharsets.UTF_8);
+        assertThat(xml)
+                .contains("<loc>https://example.com/</loc>")
+                .contains("<loc>https://example.com/jikan</loc>");
+    }
+
+    @Test
+    void noSitemapIsBuiltWithoutAPublicOrigin() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(renderer.renderSitemap(config)).isNull();
+    }
+
+    @Test
+    void robotsPointsAtTheSitemapWhenThePublicOriginIsKnown() {
+        RenderedPage page = renderer.renderRobots(defaultConfig());
+
+        String text = new String(page.body(), StandardCharsets.UTF_8);
+
+        assertThat(page.contentType()).isEqualTo("text/plain; charset=utf-8");
+        assertThat(text)
+                .contains("User-agent: *")
+                .contains("Disallow: /api/v0/")
+                .contains("Sitemap: https://inahosai.serbekun.com/sitemap.xml");
+    }
+
+    @Test
+    void robotsOmitsTheSitemapLineWithoutAPublicOrigin() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(new String(renderer.renderRobots(config).body(), StandardCharsets.UTF_8))
+                .doesNotContain("Sitemap:");
     }
 
     // endregion

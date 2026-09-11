@@ -133,7 +133,8 @@ cp src/main/resources/config.default.yaml config.yaml
 Edit `config.yaml`. At minimum:
 
 - `school.name_ja`, `festival.name`, `festival.start_date` — required, or every page shows a setup banner
-- dates, slogan, concept, works, stream, `site.base_url` (needed for LINE `og:` tags)
+- dates, slogan, concept, works, stream, `site.base_url` (needed for LINE `og:` tags,
+  the canonical link and `/sitemap.xml`)
 - `site.repo_url` — point it at *your* fork
 - `is_setup_readed_and_config_edited: true` — or the process exits
 

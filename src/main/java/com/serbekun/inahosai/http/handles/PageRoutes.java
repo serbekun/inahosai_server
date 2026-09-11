@@ -42,6 +42,8 @@ public class PageRoutes implements HttpHandler {
 
     private volatile Map<String, RenderedPage> pages;
     private volatile RenderedPage notFound;
+    private volatile RenderedPage sitemap;
+    private volatile RenderedPage robots;
 
     /**
      * Creates the handler and performs the initial render.
@@ -68,6 +70,8 @@ public class PageRoutes implements HttpHandler {
         RenderedPage error = renderer.renderNotFound(config);
         this.pages = rendered;
         this.notFound = error;
+        this.sitemap = renderer.renderSitemap(config);
+        this.robots = renderer.renderRobots(config);
         return rendered.size();
     }
 
@@ -87,6 +91,14 @@ public class PageRoutes implements HttpHandler {
         for (String route : pages.keySet()) {
             svr.get(route, ctx -> serve(ctx, route));
         }
+
+        // Registered when they can be built. A sitemap needs an absolute public origin,
+        // so without site.base_url there is nothing to register; robots.txt is always
+        // useful and simply omits its Sitemap line when the origin is unknown.
+        if (sitemap != null) {
+            svr.get("/sitemap.xml", this::serveSitemap);
+        }
+        svr.get("/robots.txt", this::serveRobots);
 
         // Not qualified by content type: Javalin matches that against the RESPONSE type,
         // and an unmatched route is text/plain, so an "html" mapper would never fire.
@@ -132,6 +144,34 @@ public class PageRoutes implements HttpHandler {
             return;
         }
         ctx.contentType(page.contentType()).result(page.body());
+    }
+
+    /**
+     * Writes the sitemap, or a 404 if a reload removed the public origin it needs.
+     *
+     * @param ctx the request
+     */
+    private void serveSitemap(Context ctx) {
+        RenderedPage page = sitemap;
+        if (page == null) {
+            ctx.status(HttpStatus.NOT_FOUND).result(FALLBACK_NOT_FOUND);
+            return;
+        }
+        write(ctx, page);
+    }
+
+    /**
+     * Writes {@code robots.txt}.
+     *
+     * @param ctx the request
+     */
+    private void serveRobots(Context ctx) {
+        RenderedPage page = robots;
+        if (page == null) {
+            ctx.status(HttpStatus.NOT_FOUND).result(FALLBACK_NOT_FOUND);
+            return;
+        }
+        write(ctx, page);
     }
 
     /**

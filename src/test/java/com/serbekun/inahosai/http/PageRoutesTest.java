@@ -39,7 +39,7 @@ class PageRoutesTest {
     @Test
     void everyPageIsServedAtItsCleanRoute() {
         JavalinTest.test(defaultApp(), (server, client) -> {
-            for (String route : new String[] {"/", "/jikan", "/manabi", "/basho", "/sekai"}) {
+            for (String route : new String[] {"/", "/jikan", "/manabi", "/basho", "/sedai"}) {
                 assertThat(client.get(route).code()).as("GET %s", route).isEqualTo(200);
             }
         });
@@ -137,6 +137,45 @@ class PageRoutesTest {
             assertThat(client.get("/").body().string())
                     .contains("別の祭")
                     .doesNotContain("茎崎");
+        });
+    }
+
+    @Test
+    void theSitemapIsServedWhenAPublicOriginIsConfigured() {
+        JavalinTest.test(defaultApp(), (server, client) -> {
+            var response = client.get("/sitemap.xml");
+
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.header("Content-Type")).startsWith("application/xml");
+            assertThat(response.body().string())
+                    .contains("<loc>https://inahosai.serbekun.com/</loc>")
+                    .contains("https://inahosai.serbekun.com/sedai");
+        });
+    }
+
+    @Test
+    void theSitemapIsNotRegisteredWithoutAPublicOrigin() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        JavalinTest.test(appFor(config), (server, client) ->
+                assertThat(client.get("/sitemap.xml").code()).isEqualTo(404));
+    }
+
+    @Test
+    void robotsTxtIsServed() {
+        JavalinTest.test(defaultApp(), (server, client) -> {
+            var response = client.get("/robots.txt");
+
+            assertThat(response.code()).isEqualTo(200);
+            assertThat(response.header("Content-Type")).startsWith("text/plain");
+            assertThat(response.body().string())
+                    .contains("User-agent: *")
+                    .contains("Sitemap: https://inahosai.serbekun.com/sitemap.xml");
         });
     }
 }

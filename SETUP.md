@@ -55,7 +55,7 @@ The Japanese era shown on every page (`令和8年`) is derived from this date, n
 the calendar year. Eras change mid-year — 令和 began on 1 May 2019 — so a date is the
 only thing that gives the right answer. Set the real first day of your festival.
 
-The default config ships `2026-01-01` as an obvious placeholder. Change it.
+The default config ships `2026-09-18` as an obvious placeholder. Change it.
 
 Note that Java renders the first year of an era as `令和1年`, not `令和元年`.
 
@@ -65,9 +65,15 @@ Note that Java renders the first year of an era as `令和1年`, not `令和元�
 - `school.name_latin` — shown under the hero title; omit it and the line disappears.
 - `festival.slogan` — the one-word theme, used in the hero and the header.
 - `festival.concept_lead` — the CONCEPT paragraph, one entry per line.
-- `site.base_url` — your public origin. **Without it, `og:url` and `og:image` are
-  omitted**, because a relative image URL is useless to a link-preview crawler. Set it
-  if the site will be shared in LINE.
+- `festival.about` — extra paragraphs for the visible ABOUT section on the home page.
+  A factual sentence is generated from the school, festival, era, dates and slogan, so
+  this is only for anything that sentence does not already say. Leave it empty (`[]`)
+  to show only the generated text.
+- `site.base_url` — your public origin. **Without it, `og:url`, `og:image` and the
+  canonical link are omitted**, and `/sitemap.xml` is not served, because all of those
+  need absolute URLs. Set it if the site will be shared in LINE or found by a search
+  engine. With it set, the server also serves `/sitemap.xml` and a `/robots.txt` whose
+  `Sitemap:` line points at it.
 - `site.repo_url` — the repository the footer links to. It ships pointing at the
   upstream project; a fork should point it at its own. The footer also states that the
   code is MIT-licensed, which is a property of the code rather than of your school, so

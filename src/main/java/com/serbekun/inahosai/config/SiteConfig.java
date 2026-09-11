@@ -48,7 +48,7 @@ public record SiteConfig(
 
     public SiteConfig {
         school = school != null ? school : new School(null, null, null);
-        festival = festival != null ? festival : new Festival(null, null, null, null, null);
+        festival = festival != null ? festival : new Festival(null, null, null, null, null, null);
         hero = hero != null ? hero : new Hero(null, null);
         stream = stream != null ? stream : new Stream(null, null, null);
         works = works != null ? works : new Works(null);
@@ -74,13 +74,18 @@ public record SiteConfig(
     /**
      * The festival itself. {@code startDate} is what the Japanese era is derived from
      * (see {@link JapaneseEra}), so it must be the real first day of the festival.
+     *
+     * <p>{@code about} is optional prose for the visible ABOUT section. A generated
+     * sentence from the other fields is always rendered; these lines are added after it,
+     * which is what lets a fork add detail without editing a template.
      */
     public record Festival(String name, String slogan, LocalDate startDate, LocalDate endDate,
-                           List<String> conceptLead) {
+                           List<String> conceptLead, List<String> about) {
         public Festival {
             name = str(name);
             slogan = str(slogan);
             conceptLead = copyOf(conceptLead);
+            about = copyOf(about);
         }
     }
 
