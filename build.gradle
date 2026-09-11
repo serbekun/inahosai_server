@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.serbekun'
-version = 'pre-alpha-2026-09-10'
+version = 'pre-alpha-2026-09-11'
 
 java {
     toolchain {

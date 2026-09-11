@@ -55,7 +55,7 @@ http://127.0.0.1:2323/ で開きます。初回起動時、同梱テンプレー
 
 静的ファイル（CSS、JS、画像、PDF）は `/static/v0/` 以下で配信されます。ページは YAML から埋められる Mustache テンプレートで、**プロセス起動時に一度だけレンダリング**され、その後は ETag 付きのバイト列として配信されます。
 
-スタック: Java 21、Javalin 6、jmustache、Jackson YAML。それ以外のフレームワークはありません。現在のバージョン: `pre-alpha-2026-09-10`。
+スタック: Java 21、Javalin 6、jmustache、Jackson YAML。それ以外のフレームワークはありません。現在のバージョン: `pre-alpha-2026-09-11`。
 
 このリリースは設定駆動型のサイトです。ユーザーログインも、思い出掲示板も、**インストールすべきデータベースもありません**。それらは後で来ます。それらの保存先の選択はすでに決まっています（[思想](#哲学)を参照）。
 
@@ -178,14 +178,14 @@ INAHOSAI_ENV=dev ./gradlew run         # development: /setup is a checklist
 Release JAR から:
 
 ```sh
-java -jar inahosai_server-pre-alpha-2026-09-10-all.jar
+java -jar inahosai_server-pre-alpha-2026-09-11-all.jar
 ```
 
 ソースから:
 
 ```sh
 ./gradlew shadowJar
-java -jar build/libs/inahosai_server-pre-alpha-2026-09-10-all.jar
+java -jar build/libs/inahosai_server-pre-alpha-2026-09-11-all.jar
 ```
 
 設定の読み込み順（起動時にログ出力）:
