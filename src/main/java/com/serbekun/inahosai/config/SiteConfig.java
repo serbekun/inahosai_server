@@ -71,7 +71,7 @@ public record SiteConfig(
         site = site != null
                 ? site
                 : new Site(null, null, null, null, null, null, null, null, null, null,
-                        null);
+                        null, null);
         pages = copyOf(pages);
         debug = debug != null ? debug : new Debug(false, "");
         pdf = pdf != null ? pdf : new Pdf(false, "");
@@ -252,10 +252,16 @@ public record SiteConfig(
      * link, {@code author} and {@code authorUrl} the person who wrote it, and
      * {@code schoolUrl} the school's own website. A fork changes all of them to its own
      * rather than crediting upstream's.
+     *
+     * <p>{@code keywords} are supplementary terms written into a {@code meta keywords}
+     * tag and the home page's structured data, e.g. the school name and the festival
+     * name spelled several ways. They are a hint for crawlers that still read them, not
+     * a ranking factor for the major engines, so they are optional and never required.
      */
     public record Site(String staticPrefix, String baseUrl, String gateUrl, String gateLabel,
-                       String appleTouchIcon, String ogImage, String repoUrl, String repoLabel,
-                       String author, String authorUrl, String schoolUrl) {
+                       String appleTouchIcon, String ogImage, List<String> keywords,
+                       String repoUrl, String repoLabel, String author, String authorUrl,
+                       String schoolUrl) {
         public Site {
             staticPrefix = safeStaticPrefix(staticPrefix);
             baseUrl = safeLinkUrl(baseUrl, "site.base_url");
@@ -263,6 +269,7 @@ public record SiteConfig(
             gateLabel = str(gateLabel);
             appleTouchIcon = safeImageName(appleTouchIcon);
             ogImage = safeImageName(ogImage);
+            keywords = copyOf(keywords);
             repoUrl = safeLinkUrl(repoUrl, "site.repo_url");
             repoLabel = str(repoLabel);
             author = str(author);

@@ -166,6 +166,18 @@ site:
   # Filename inside the images directory used for link previews. Falls back to
   # hero.photo when empty.
   og_image: ""
+  # Supplementary search terms, written into <meta name="keywords"> and the home page's
+  # schema.org Event markup. They help with crawlers that still read them (Yandex and
+  # some vertical search); Google ignores meta keywords, so this is a hint, not a
+  # ranking factor. List the school and festival under every name people search for.
+  # Leave empty to omit the tag entirely.
+  keywords:
+    - "茎崎"
+    - "茎崎中学校"
+    - "稲穂祭"
+    - "茎崎稲穂祭"
+    - "文化祭"
+    - "学校"
   # Source repository, linked from the footer next to the MIT licence note. A fork
   # should point this at ITS OWN repository. Leave empty to render no link at all.
   repo_url: "https://github.com/serbekun/inahosai_server"

@@ -560,6 +560,64 @@ class SiteRendererTest {
 
     // endregion
 
+    // region Keywords
+
+    @Test
+    void configuredKeywordsAreWrittenIntoTheMetaTag() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {keywords: ["茎崎", "茎崎中学校", "茎崎稲穂祭"]}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/"))
+                .contains("<meta name=\"keywords\" "
+                        + "content=\"茎崎, 茎崎中学校, 茎崎稲穂祭\">");
+    }
+
+    @Test
+    void noKeywordsTagIsRenderedWhenNoneAreConfigured() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/")).doesNotContain("name=\"keywords\"");
+    }
+
+    @Test
+    void keywordsAreAlsoPartOfTheEventStructuredData() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {base_url: "https://example.com", keywords: ["茎崎稲穂祭", "文化祭"]}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/")).contains("\"keywords\":\"茎崎稲穂祭, 文化祭\"");
+    }
+
+    @Test
+    void aNoindexPageCarriesNoKeywords() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {keywords: ["茎崎"]}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(new String(renderer.renderNotFound(config).body(), StandardCharsets.UTF_8))
+                .doesNotContain("name=\"keywords\"");
+    }
+
+    // endregion
+
     // region Visible ABOUT text
 
     @Test

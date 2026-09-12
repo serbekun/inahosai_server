@@ -250,7 +250,25 @@ class SiteConfigTest {
     }
 
     private static String prefix(String value) {
-        return new SiteConfig.Site(value, "", "", "", "", "", "", "", "", "", "").staticPrefix();
+        return new SiteConfig.Site(value, "", "", "", "", "", List.of(), "", "", "", "", "")
+                .staticPrefix();
+    }
+
+    @Test
+    void siteKeywordsAreParsedInOrder() {
+        SiteConfig config = loader.parse("""
+                site:
+                  keywords: ["茎崎", "茎崎中学校", "稲穂祭"]
+                """);
+
+        assertThat(config.site().keywords())
+                .containsExactly("茎崎", "茎崎中学校", "稲穂祭");
+    }
+
+    @Test
+    void siteKeywordsDefaultToEmpty() {
+        assertThat(SiteConfigLoader.emptyConfig().site().keywords()).isEmpty();
+        assertThat(loader.parse("site: {}\n").site().keywords()).isEmpty();
     }
 
     // endregion

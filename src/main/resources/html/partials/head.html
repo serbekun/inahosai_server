@@ -2,7 +2,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{{title}}}</title>
 <meta name="description" content="{{{description}}}">
-
+{{#hasKeywords}}<meta name="keywords" content="{{keywordsText}}">
+{{/hasKeywords}}
 {{#noIndex}}<meta name="robots" content="noindex, nofollow">
 {{/noIndex}}<meta property="og:type" content="website">
 <meta property="og:site_name" content="{{festival.name}}">

@@ -341,6 +341,9 @@ public class SiteRenderer {
         model.put("ogImage", "");
         model.put("hasCanonical", false);
         model.put("canonicalUrl", "");
+        // A noindex page carries no search terms either, so a crawler cannot index the
+        // 404 or setup page through its keywords.
+        model.put("hasKeywords", false);
     }
 
     /**
@@ -452,6 +455,12 @@ public class SiteRenderer {
         model.put("title", inline(page.title(), model));
         model.put("description", inline(page.description(), model));
         openGraph(model, config, page);
+
+        // Supplementary search terms. They come from the config because the school name,
+        // the festival name and the ways people spell them are fork-specific facts.
+        List<String> keywords = config.site().keywords();
+        model.put("hasKeywords", !keywords.isEmpty());
+        model.put("keywordsText", String.join(", ", keywords));
 
         // Only the home page carries the event markup, so the same Event is not repeated
         // on every page of one small site.
@@ -675,6 +684,9 @@ public class SiteRenderer {
         event.put("eventStatus", "https://schema.org/EventScheduled");
         event.put("eventAttendanceMode", "https://schema.org/OfflineEventAttendanceMode");
         event.put("description", model.get("description"));
+        if (!config.site().keywords().isEmpty()) {
+            event.put("keywords", String.join(", ", config.site().keywords()));
+        }
 
         Map<String, Object> location = new LinkedHashMap<>();
         location.put("@type", "Place");
