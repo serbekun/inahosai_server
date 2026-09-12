@@ -158,13 +158,13 @@ class SiteRendererTest {
     // region Absent config hides elements
 
     @Test
-    void anUnsetWorkUrlProducesNoAnchorElement() {
+    void aWorkWithoutFilesProducesNoAnchorElement() {
         SiteConfig config = loader.parse("""
                 school: {name_ja: "茎崎"}
                 festival: {name: "稲穂祭", start_date: "2026-10-03"}
                 works:
                   items:
-                    - {title: "書道作品", description: "d", url: ""}
+                    - {key: shodo, title: "書道作品", description: "d", files: []}
                 pages:
                   - {key: manabi, route: "/manabi", template: manabi.html}
                 """);
@@ -177,19 +177,92 @@ class SiteRendererTest {
     }
 
     @Test
-    void aConfiguredWorkUrlProducesAnAnchorElement() {
+    void aSingleFileWorkLinksStraightToTheFile() {
         SiteConfig config = loader.parse("""
                 school: {name_ja: "茎崎"}
                 festival: {name: "稲穂祭", start_date: "2026-10-03"}
                 works:
                   items:
-                    - {title: "書道作品", description: "d", url: "https://example.com/works"}
+                    - key: shodo
+                      title: "書道作品"
+                      description: "d"
+                      files:
+                        - {name: "作品集", url: "https://example.com/works.pdf"}
                 pages:
                   - {key: manabi, route: "/manabi", template: manabi.html}
                 """);
 
         assertThat(render(config, "/manabi"))
-                .contains("<a class=\"branchmap__btn\" href=\"https://example.com/works\">");
+                .contains("<a class=\"branchmap__btn\" href=\"https://example.com/works.pdf\">");
+    }
+
+    @Test
+    void aMultiFileWorkLinksToItsChooserPage() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                works:
+                  items:
+                    - key: bijutsu
+                      title: "美術作品"
+                      description: "d"
+                      files:
+                        - {name: "1年生", url: "/static/v0/pdf/a.pdf"}
+                        - {name: "2年生", url: "/static/v0/pdf/b.pdf"}
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        assertThat(render(config, "/manabi"))
+                .contains("<a class=\"branchmap__btn\" href=\"/works/bijutsu\">");
+    }
+
+    @Test
+    void aWorkChooserPageListsEveryFileByName() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                works:
+                  items:
+                    - key: bijutsu
+                      title: "美術作品"
+                      description: "d"
+                      files:
+                        - {name: "1年生", url: "/static/v0/pdf/a.pdf"}
+                        - {name: "2年生", url: "/static/v0/pdf/b.pdf"}
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        RenderedPage page = renderer.renderWorkPages(config).get("bijutsu");
+
+        assertThat(page).isNotNull();
+        assertThat(new String(page.body(), StandardCharsets.UTF_8))
+                .contains("美術作品")
+                .contains("1年生")
+                .contains("2年生")
+                .contains("href=\"/static/v0/pdf/a.pdf\"")
+                .contains("href=\"/static/v0/pdf/b.pdf\"")
+                .contains("href=\"/manabi\"");
+    }
+
+    @Test
+    void onlyMultiFileWorksGetAChooserPage() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                works:
+                  items:
+                    - key: shodo
+                      title: "書道作品"
+                      description: "d"
+                      files:
+                        - {name: "作品集", url: "/static/v0/pdf/a.pdf"}
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        assertThat(renderer.renderWorkPages(config)).isEmpty();
     }
 
     @Test
@@ -572,7 +645,8 @@ class SiteRendererTest {
         assertThat(xml)
                 .contains("<loc>https://example.com/</loc>")
                 .contains("<loc>https://example.com/jikan</loc>")
-                .doesNotContain("/static/v0/pdf");
+                .doesNotContain("/static/v0/pdf")
+                .doesNotContain("/works/");
     }
 
     @Test

@@ -47,6 +47,7 @@ public class AdminReload implements HttpHandler {
     private final Supplier<SiteConfig> configSource;
     private final PageRoutes pageRoutes;
     private final SetupPage setupPage;
+    private final WorksRoutes worksRoutes;
     private final String token;
 
     /**
@@ -55,13 +56,15 @@ public class AdminReload implements HttpHandler {
      * @param configSource loads the config afresh on each call
      * @param pageRoutes   the page routes whose bodies are swapped
      * @param setupPage    the setup page, kept pointing at the same config
+     * @param worksRoutes  the work chooser routes whose bodies are swapped
      * @param token        the shared secret, or null/blank to disable the route entirely
      */
     public AdminReload(Supplier<SiteConfig> configSource, PageRoutes pageRoutes,
-                       SetupPage setupPage, String token) {
+                       SetupPage setupPage, WorksRoutes worksRoutes, String token) {
         this.configSource = configSource;
         this.pageRoutes = pageRoutes;
         this.setupPage = setupPage;
+        this.worksRoutes = worksRoutes;
         this.token = token;
     }
 
@@ -71,10 +74,11 @@ public class AdminReload implements HttpHandler {
      * @param configSource loads the config afresh on each call
      * @param pageRoutes   the page routes whose bodies are swapped
      * @param setupPage    the setup page, kept pointing at the same config
+     * @param worksRoutes  the work chooser routes whose bodies are swapped
      */
     public AdminReload(Supplier<SiteConfig> configSource, PageRoutes pageRoutes,
-                       SetupPage setupPage) {
-        this(configSource, pageRoutes, setupPage, System.getenv(TOKEN_ENV));
+                       SetupPage setupPage, WorksRoutes worksRoutes) {
+        this(configSource, pageRoutes, setupPage, worksRoutes, System.getenv(TOKEN_ENV));
     }
 
     @Override
@@ -116,6 +120,7 @@ public class AdminReload implements HttpHandler {
         }
 
         int rendered = pageRoutes.reload(config);
+        worksRoutes.reload(config);
         setupPage.reload(config);
 
         log.info("Reloaded config and re-rendered {} page(s)", rendered);

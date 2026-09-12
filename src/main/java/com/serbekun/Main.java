@@ -17,6 +17,7 @@ import com.serbekun.inahosai.http.handles.SetupPage;
 import com.serbekun.inahosai.http.handles.StaticRoutes;
 import com.serbekun.inahosai.http.handles.V0Health;
 import com.serbekun.inahosai.http.handles.V0LiveType;
+import com.serbekun.inahosai.http.handles.WorksRoutes;
 import com.serbekun.inahosai.render.SiteRenderer;
 import com.serbekun.inahosai.resources.LookupOrder;
 import com.serbekun.inahosai.resources.ResourceCache;
@@ -65,6 +66,7 @@ public final class Main {
 
         SiteRenderer siteRenderer = new SiteRenderer(resourcesService);
         PageRoutes pageRoutes = new PageRoutes(siteRenderer, siteConfig);
+        WorksRoutes worksRoutes = new WorksRoutes(siteRenderer, siteConfig);
         SetupPage setupPage = new SetupPage(siteRenderer, siteConfig);
 
         /**
@@ -74,9 +76,10 @@ public final class Main {
             new V0Health(),
             new V0LiveType(siteConfig),
             pageRoutes,
+            worksRoutes,
             setupPage,
             new DebugPages(resourcesService, siteConfig),
-            new AdminReload(siteConfigLoader::load, pageRoutes, setupPage),
+            new AdminReload(siteConfigLoader::load, pageRoutes, setupPage, worksRoutes),
             new StaticRoutes(resourcesService, siteConfig)
         );
 

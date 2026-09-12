@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -223,19 +224,29 @@ class SiteConfigTest {
     }
 
     @Test
-    void linkUrlAcceptsAbsoluteHttpAndSiteRelativePaths() {
-        assertThat(new SiteConfig.WorkItem("t", "d", "https://example.com/x").url())
+    void fileRefsKeepAbsoluteHttpAndSiteRelativeUrls() {
+        assertThat(new SiteConfig.FileRef("a", "https://example.com/x").url())
                 .isEqualTo("https://example.com/x");
-        assertThat(new SiteConfig.WorkItem("t", "d", "/jikan").url()).isEqualTo("/jikan");
-        assertThat(new SiteConfig.WorkItem("t", "d", "").url()).isEmpty();
+        assertThat(new SiteConfig.FileRef("b", "/static/v0/pdf/a.pdf").url())
+                .isEqualTo("/static/v0/pdf/a.pdf");
+        assertThat(new SiteConfig.FileRef("c", "").url()).isEmpty();
     }
 
     @Test
-    void linkUrlRejectsScriptAndProtocolRelativeDestinations() {
-        assertThat(new SiteConfig.WorkItem("t", "d", "javascript:alert(1)").url()).isEmpty();
-        assertThat(new SiteConfig.WorkItem("t", "d", "data:text/html,<script>").url()).isEmpty();
-        assertThat(new SiteConfig.WorkItem("t", "d", "//evil.example.com").url()).isEmpty();
-        assertThat(new SiteConfig.WorkItem("t", "d", "/../../secret").url()).isEmpty();
+    void fileRefsRejectScriptAndProtocolRelativeDestinations() {
+        assertThat(new SiteConfig.FileRef("a", "javascript:alert(1)").url()).isEmpty();
+        assertThat(new SiteConfig.FileRef("b", "data:text/html,<script>").url()).isEmpty();
+        assertThat(new SiteConfig.FileRef("c", "//evil.example.com").url()).isEmpty();
+        assertThat(new SiteConfig.FileRef("d", "/../../secret").url()).isEmpty();
+    }
+
+    @Test
+    void workKeyIsNormalizedToALowercaseSlug() {
+        assertThat(new SiteConfig.WorkItem("Shodo-2026", "t", "d", List.of()).key())
+                .isEqualTo("shodo-2026");
+        assertThat(new SiteConfig.WorkItem("has space", "t", "d", List.of()).key()).isEmpty();
+        assertThat(new SiteConfig.WorkItem("bad/slash", "t", "d", List.of()).key()).isEmpty();
+        assertThat(new SiteConfig.WorkItem("", "t", "d", List.of()).key()).isEmpty();
     }
 
     private static String prefix(String value) {

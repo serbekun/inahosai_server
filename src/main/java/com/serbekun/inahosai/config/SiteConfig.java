@@ -46,6 +46,9 @@ public record SiteConfig(
     /** A YouTube video id — exactly 11 characters of an unreserved alphabet. */
     private static final Pattern YOUTUBE_ID = Pattern.compile("[A-Za-z0-9_-]{11}");
 
+    /** A work key — a lowercase slug safe to place in a URL path segment. */
+    private static final Pattern WORK_KEY = Pattern.compile("[a-z0-9][a-z0-9-]*");
+
     public SiteConfig {
         school = school != null ? school : new School(null, null, null);
         festival = festival != null ? festival : new Festival(null, null, null, null, null, null);
@@ -167,12 +170,32 @@ public record SiteConfig(
         }
     }
 
-    /** One work. An empty {@code url} means the link button is not rendered. */
-    public record WorkItem(String title, String description, String url) {
+    /**
+     * One work. {@code key} names its file-chooser page at {@code /works/{key}}.
+     *
+     * <p>A work with no {@code files} renders no button at all. A work with exactly one
+     * file links straight to it; a work with several gets a chooser page listing them.
+     * A work that has files but no usable {@code key} cannot have a chooser, so it is
+     * warned about and its button is omitted rather than rendered dead.
+     */
+    public record WorkItem(String key, String title, String description, List<FileRef> files) {
         public WorkItem {
+            key = safeWorkKey(key);
             title = str(title);
             description = str(description);
-            url = safeLinkUrl(url, "works[].url");
+            files = copyOf(files);
+            if (key.isEmpty() && !files.isEmpty()) {
+                log.warn("works[] entry '{}' has files but no URL-safe key; no button is rendered",
+                        title);
+            }
+        }
+    }
+
+    /** One downloadable file of a work: the label a visitor sees and its link. */
+    public record FileRef(String name, String url) {
+        public FileRef {
+            name = str(name);
+            url = safeLinkUrl(url, "works[].files[].url");
         }
     }
 
@@ -414,6 +437,28 @@ public record SiteConfig(
             log.warn("Image name '{}' is not a plain filename; treating the image as absent", name);
             return "";
         }
+    }
+
+    /**
+     * Validates a work key: a lowercase slug that is safe as a URL path segment.
+     *
+     * <p>Anything else is logged and discarded, which leaves the work without a
+     * chooser page. Uppercase is folded to lowercase rather than rejected.
+     *
+     * @param value the configured key
+     * @return the normalized slug, or an empty string when it is not usable
+     */
+    private static String safeWorkKey(String value) {
+        String key = str(value).toLowerCase(Locale.ROOT);
+        if (key.isEmpty()) {
+            return "";
+        }
+        if (!WORK_KEY.matcher(key).matches()) {
+            log.warn("works[].key '{}' is not a lowercase URL slug; the work gets no page",
+                    value);
+            return "";
+        }
+        return key;
     }
 
     /** Validates the static mount point: must be rooted, must not climb. */

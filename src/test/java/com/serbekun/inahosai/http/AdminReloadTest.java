@@ -17,6 +17,7 @@ import com.serbekun.inahosai.config.SiteConfigLoader;
 import com.serbekun.inahosai.http.handles.AdminReload;
 import com.serbekun.inahosai.http.handles.PageRoutes;
 import com.serbekun.inahosai.http.handles.SetupPage;
+import com.serbekun.inahosai.http.handles.WorksRoutes;
 import com.serbekun.inahosai.render.SiteRenderer;
 import com.serbekun.inahosai.resources.ResourceCache;
 import com.serbekun.inahosai.resources.ResourceLoader;
@@ -43,11 +44,13 @@ class AdminReloadTest {
         SiteRenderer renderer = new SiteRenderer(resources);
         SiteConfig initial = loader.loadBundledDefault();
         PageRoutes pageRoutes = new PageRoutes(renderer, initial);
+        WorksRoutes worksRoutes = new WorksRoutes(renderer, initial);
         SetupPage setupPage = new SetupPage(renderer, initial, false);
 
         Javalin app = Javalin.create();
         pageRoutes.register(app);
-        new AdminReload(configSource, pageRoutes, setupPage, token).register(app);
+        worksRoutes.register(app);
+        new AdminReload(configSource, pageRoutes, setupPage, worksRoutes, token).register(app);
         return app;
     }
 

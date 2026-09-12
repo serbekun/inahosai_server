@@ -76,7 +76,8 @@ public final class ConfigKeys {
                     "Zoom meeting URL. Unset or malformed means no Zoom stream.",
                     false, c -> !c.stream().zoomUrl().isEmpty()),
 
-            new Key("works.items", "Student works listed on the 学び page.",
+            new Key("works.items",
+                    "Student works on the 学び page, each with a key and a list of files.",
                     false, c -> !c.works().items().isEmpty()),
 
             new Key("graph.center", "Centre word of the theme graph.",

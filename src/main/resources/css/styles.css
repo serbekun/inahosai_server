@@ -624,6 +624,61 @@ body {
   background: var(--gold);
 }
 
+/* The file list on a work's chooser page (/works/{key}). */
+.workfiles {
+  width: min(1040px, 92vw);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(12px, 2vh, 20px);
+}
+
+.workfiles__item {
+  display: flex;
+  justify-content: center;
+}
+
+.workfiles__link {
+  display: block;
+  width: min(420px, 80vw);
+  padding: clamp(14px, 2.2vh, 20px) clamp(18px, 3vw, 28px);
+  font-size: clamp(14px, 1.4vw, 18px);
+  letter-spacing: .12em;
+  text-align: center;
+  text-decoration: none;
+  color: var(--ink);
+  border: 1px solid var(--ink-faint);
+  border-radius: 14px;
+  transition: color .25s var(--ease), border-color .25s var(--ease),
+              background-color .25s var(--ease);
+}
+
+.workfiles__link:hover,
+.workfiles__link:focus-visible {
+  color: var(--paper);
+  border-color: var(--gold);
+  background: var(--gold);
+}
+
+.workfiles__back {
+  width: min(1040px, 92vw);
+  margin: clamp(24px, 4vh, 40px) auto 0;
+  text-align: center;
+}
+
+.workfiles__back a {
+  font-size: clamp(12px, 1.1vw, 14px);
+  letter-spacing: .12em;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.workfiles__back a:hover,
+.workfiles__back a:focus-visible {
+  color: var(--gold);
+}
+
 @media (max-width: 720px) {
   .branchmap--works .branchmap__row { grid-template-columns: 1fr; }
   .branchmap--works .branchmap__bar { display: none; }

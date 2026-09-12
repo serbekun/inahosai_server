@@ -35,8 +35,9 @@
           <span class="branchmap__grade">{{ordinal}}</span>
           <span class="branchmap__word">{{title}}</span>
           <p class="branchmap__desc">{{description}}</p>
-{{#hasUrl}}          <a class="branchmap__btn" href="{{url}}">作品一覧を見る</a>
-{{/hasUrl}}        </li>
+{{#hasDirect}}          <a class="branchmap__btn" href="{{directUrl}}">作品一覧を見る</a>
+{{/hasDirect}}{{#hasChooser}}          <a class="branchmap__btn" href="{{chooserUrl}}">作品一覧を見る</a>
+{{/hasChooser}}        </li>
 {{/works}}
       </ul>
     </div>

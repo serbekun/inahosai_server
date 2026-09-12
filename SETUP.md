@@ -84,6 +84,10 @@ Note that Java renders the first year of an era as `令和1年`, not `令和元�
 - `pages` — the pages, their routes and their nav labels. The shared header is
   generated from this list, so the navigation is identical on every page.
 - `graph` — the theme words on the home, 場所 and 世界 pages.
+- `works.items` — the works listed on the 学び page. Each item has a `title`, a
+  `description`, a lowercase `key` and a list of `files` (`{name, url}`). One file
+  downloads straight from the button; two or more open a chooser page at `/works/{key}`.
+  The chooser is not part of `pages`, so it never appears in the nav or the sitemap.
 
 ### Live stream
 
@@ -105,7 +109,10 @@ still only renders the YouTube embed.
 
 An unconfigured fork must never show a dead link or a broken image. So:
 
-- no `works[].url` → the 作品一覧を見る button is not rendered at all
+- no `works[].files` → the 作品一覧を見る button is not rendered at all
+- a work with one file → the button downloads that file directly
+- a work with several files → the button opens `/works/{key}`, a chooser page
+- a work with files but no URL-safe `key` → no button, and a warning at startup
 - no `hero.photo` → no `<img>`; the hero composition already works without one
 - no `site.gate_url` → the extra header link is absent entirely
 - no `site.repo_url` → the footer shows the licence note without a source link

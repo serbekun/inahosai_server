@@ -77,22 +77,33 @@ stream:
   zoom_url: ""
 
 works:
-  # Student works listed on the 学び page. An item with an empty url renders no
-  # button at all, rather than a dead link.
+  # Student works listed on the 学び page. Each item has a `key` and a list of
+  # `files`. An item with an empty files list renders no button at all, rather than
+  # a dead link.
   #
-  # Every item ships pointing at the placeholder PDF so each button downloads
-  # something out of the box. Replace the urls with your own documents (dropped into
-  # data/static/pdf/) or real external links.
+  # One file: the button downloads it directly. Two or more: the button opens a
+  # chooser page at /works/{key} listing every file by name. `key` must be a
+  # lowercase slug (a-z, 0-9, -) because it is used in that URL.
+  #
+  # Every item ships pointing at the placeholder PDF so each button works out of the
+  # box. Replace the files with your own documents (dropped into data/static/pdf/).
   items:
-    - title: "書道作品"
+    - key: shodo
+      title: "書道作品"
       description: "一画一画に心を込めて書き上げた、力強く美しい作品です。"
-      url: "/static/v0/pdf/sample.pdf"
-    - title: "美術作品"
+      files:
+        - {name: "作品集", url: "/static/v0/pdf/sample.pdf"}
+    - key: bijutsu
+      title: "美術作品"
       description: "想像力と表現力を生かして描いた、色あざやかな作品です。"
-      url: "/static/v0/pdf/sample.pdf"
-    - title: "英語自己紹介カード"
+      files:
+        - {name: "1年生", url: "/static/v0/pdf/sample.pdf"}
+        - {name: "2年生", url: "/static/v0/pdf/sample.pdf"}
+    - key: eigo
+      title: "英語自己紹介カード"
       description: "自分のことを英語で紹介！個性あふれる自己紹介カードです。"
-      url: "/static/v0/pdf/sample.pdf"
+      files:
+        - {name: "作品集", url: "/static/v0/pdf/sample.pdf"}
 
 graph:
   # The theme graph drawn by graph.js on the home, 場所 and 世界 pages.

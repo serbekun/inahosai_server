@@ -42,6 +42,15 @@ public class SiteRenderer {
     /** Name of the development-only setup template. */
     public static final String SETUP_TEMPLATE = "setup.html";
 
+    /** Name of the per-work file-chooser template. */
+    public static final String WORK_TEMPLATE = "work.html";
+
+    /** Template of the page that lists the works, used to build the chooser's back link. */
+    private static final String WORK_LISTING_TEMPLATE = "manabi.html";
+
+    /** URL prefix under which a work's file-chooser page is served. */
+    public static final String WORK_ROUTE_PREFIX = "/works/";
+
     private final ResourcesService resources;
     private final Mustache.Compiler compiler;
 
@@ -173,6 +182,69 @@ public class SiteRenderer {
         // it prints no config values.
         suppressSharing(model);
         return render(template, model, SETUP_TEMPLATE);
+    }
+
+    /**
+     * Renders one file-chooser page per work that has more than one file.
+     *
+     * <p>These are utility pages, not configured pages: they are not part of the shared
+     * nav and not listed in the sitemap. They are still real server-rendered pages, so
+     * the chooser works with JavaScript off and each one has a stable URL that can be
+     * shared.
+     *
+     * @param config the site config
+     * @return a route key (the work key) to page map
+     */
+    public Map<String, RenderedPage> renderWorkPages(SiteConfig config) {
+        String template = resources.getHtml(WORK_TEMPLATE);
+        if (template == null) {
+            log.warn("No {} template found; work chooser pages are unavailable", WORK_TEMPLATE);
+            return Map.of();
+        }
+
+        String worksRoute = worksListingRoute(config);
+        Map<String, RenderedPage> pages = new LinkedHashMap<>();
+        for (SiteConfig.WorkItem item : config.works().items()) {
+            if (item.key().isEmpty() || item.files().size() < 2) {
+                continue;
+            }
+            String title = item.title();
+            String festival = config.festival().name();
+            if (!festival.isEmpty()) {
+                title = title.isEmpty() ? festival : title + " — " + festival;
+            }
+            SiteConfig.Page page = new SiteConfig.Page(
+                    "work-" + item.key(), WORK_ROUTE_PREFIX + item.key(), WORK_TEMPLATE, "", "",
+                    title, item.description(), "", "");
+            Map<String, Object> model = model(config, page);
+
+            Map<String, Object> work = new LinkedHashMap<>();
+            work.put("title", item.title());
+            work.put("description", item.description());
+            work.put("files", workFiles(item));
+            model.put("work", work);
+            model.put("worksRoute", worksRoute);
+
+            pages.put(item.key(), render(template, model, WORK_TEMPLATE));
+        }
+        return Map.copyOf(pages);
+    }
+
+    /**
+     * Finds the route of the page that lists the works, so the chooser can link back to
+     * it without hardcoding a school's route. Falls back to the home page when no page
+     * uses the works template.
+     *
+     * @param config the site config
+     * @return a site-relative route
+     */
+    private static String worksListingRoute(SiteConfig config) {
+        for (SiteConfig.Page page : config.pages()) {
+            if (WORK_LISTING_TEMPLATE.equals(page.template()) && !page.route().isEmpty()) {
+                return page.route();
+            }
+        }
+        return "/";
     }
 
     /**
@@ -454,8 +526,9 @@ public class SiteRenderer {
     /**
      * Builds the works list.
      *
-     * <p>{@code hasUrl} is what stops an unconfigured fork from rendering a dead
-     * {@code href="#"}: with no URL the anchor is not emitted at all.
+     * <p>{@code hasDirect} / {@code hasChooser} are what stop an unconfigured fork from
+     * rendering a dead {@code href="#"}: a work with no usable file gets no anchor at
+     * all. One file downloads straight, several go through a chooser page.
      *
      * @param config the site config
      * @return one entry per work item
@@ -465,15 +538,45 @@ public class SiteRenderer {
         List<SiteConfig.WorkItem> items = config.works().items();
         for (int i = 0; i < items.size(); i++) {
             SiteConfig.WorkItem item = items.get(i);
+            List<Map<String, Object>> files = workFiles(item);
+
             Map<String, Object> work = new LinkedHashMap<>();
             work.put("ordinal", String.format("%02d", i + 1));
             work.put("title", item.title());
             work.put("description", item.description());
-            work.put("url", item.url());
-            work.put("hasUrl", !item.url().isEmpty());
+            work.put("files", files);
+            work.put("hasFiles", !files.isEmpty());
+
+            boolean direct = files.size() == 1;
+            work.put("hasDirect", direct);
+            work.put("directUrl", direct ? files.get(0).get("url") : "");
+
+            boolean chooser = files.size() > 1 && !item.key().isEmpty();
+            work.put("hasChooser", chooser);
+            work.put("chooserUrl", chooser ? WORK_ROUTE_PREFIX + item.key() : "");
             works.add(work);
         }
         return works;
+    }
+
+    /**
+     * Builds the downloadable files of one work, dropping any whose URL was rejected.
+     *
+     * @param item the work
+     * @return the renderable files
+     */
+    private static List<Map<String, Object>> workFiles(SiteConfig.WorkItem item) {
+        List<Map<String, Object>> files = new ArrayList<>();
+        for (SiteConfig.FileRef file : item.files()) {
+            if (file.url().isEmpty()) {
+                continue;
+            }
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("name", file.name());
+            entry.put("url", file.url());
+            files.add(entry);
+        }
+        return files;
     }
 
     /**

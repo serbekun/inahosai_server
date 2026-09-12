@@ -23,6 +23,7 @@ A self-hosted homepage for one 文化祭:
 | `/manabi` | 学び — exhibited works |
 | `/basho` | 場所 — venue / live |
 | `/sedai` | 世代 — the “connect generations” page |
+| `/works/{key}` | A work's file chooser, when it has several PDFs (not in the nav) |
 
 Static files (CSS, JS, images, PDFs) are served under `/static/v0/`. Pages are Mustache templates filled from YAML and **rendered once at process start**, then served as bytes with an ETag.
 
