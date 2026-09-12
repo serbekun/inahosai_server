@@ -200,6 +200,7 @@ public final class SiteConfigLoader {
      * @return an empty config
      */
     public static SiteConfig emptyConfig() {
-        return new SiteConfig(false, null, null, null, null, null, null, null, null, null, null);
+        return new SiteConfig(false, SiteConfig.DEFAULT_PORT, null, null, null, null, null, null,
+                null, null, null, null);
     }
 }

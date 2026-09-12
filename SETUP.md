@@ -178,8 +178,9 @@ Later runs skip the copy, and an upgraded build only fills in templates that are
 that version — files already on disk are never overwritten, so your edits survive. After
 that, the running server reads `data/static/` and nothing else.
 
-The server listens on port 2323. Pages are served at `/`, `/jikan`, `/manabi`,
-`/basho` and `/sedai`; static assets under `/static/v0/`.
+The server listens on the top-level `port` from `config.yaml` (default `2323`).
+Pages are served at `/`, `/jikan`, `/manabi`, `/basho` and `/sedai`; static assets
+under `/static/v0/`.
 
 Every page is rendered once at startup and held in memory. Editing a template or the
 config therefore needs a restart — or a call to `/api/v0/admin/reload`, which is only

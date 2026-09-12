@@ -84,7 +84,7 @@ public final class Main {
         );
 
         Javalin svr = Javalin.create();
-        InitHttp initHttp = new InitHttp(svr, 2323, handlers);
+        InitHttp initHttp = new InitHttp(svr, siteConfig.port(), handlers);
         initHttp.initHttp();
 
     }

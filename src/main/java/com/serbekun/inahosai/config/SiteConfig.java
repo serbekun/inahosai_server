@@ -30,6 +30,7 @@ import com.serbekun.inahosai.resources.ResourcesBasePath;
  */
 public record SiteConfig(
         boolean isSetupReadedAndConfigEdited,
+        int port,
         School school,
         Festival festival,
         Hero hero,
@@ -43,6 +44,9 @@ public record SiteConfig(
 
     private static final Logger log = LoggerFactory.getLogger(SiteConfig.class);
 
+    /** The port used when the config sets none, or sets one outside 1..65535. */
+    public static final int DEFAULT_PORT = 2323;
+
     /** A YouTube video id — exactly 11 characters of an unreserved alphabet. */
     private static final Pattern YOUTUBE_ID = Pattern.compile("[A-Za-z0-9_-]{11}");
 
@@ -50,6 +54,14 @@ public record SiteConfig(
     private static final Pattern WORK_KEY = Pattern.compile("[a-z0-9][a-z0-9-]*");
 
     public SiteConfig {
+        // A missing key deserializes to 0; anything outside the valid range falls back to
+        // the default rather than binding a port the JVM would reject.
+        if (port < 1 || port > 65535) {
+            if (port != 0) {
+                log.warn("port {} is not in 1..65535; using {}", port, DEFAULT_PORT);
+            }
+            port = DEFAULT_PORT;
+        }
         school = school != null ? school : new School(null, null, null);
         festival = festival != null ? festival : new Festival(null, null, null, null, null, null);
         hero = hero != null ? hero : new Hero(null, null);

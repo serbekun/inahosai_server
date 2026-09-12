@@ -18,6 +18,11 @@
 # cannot go live still carrying the default school by accident.
 is_setup_readed_and_config_edited: false
 
+# TCP port the HTTP server binds to. Change this when 2323 is taken or when a
+# proxy expects the site elsewhere. Must be in 1..65535; anything else falls back
+# to 2323.
+port: 2323
+
 school:
   # Full school name in Japanese. Required.
   name_ja: "茎崎"
