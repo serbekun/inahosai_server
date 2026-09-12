@@ -256,14 +256,16 @@ public record SiteConfig(
     /**
      * Opt-in gate for the PDF resources under {@code /static/v0/pdf/*}.
      *
-     * <p>When {@code requireAuth} is true every PDF request must present {@code token}
-     * as the {@code token} query parameter, e.g. {@code /static/v0/pdf/leaflet.pdf?token=SECRET}.
-     * The same gate covers the PDF directory listing, so file names do not leak either.
-     * When {@code requireAuth} is false, or when no token is set, PDFs are served as
-     * before.
+     * <p>When {@code requireAuth} is true the visitor posts {@code token} once through
+     * the unlock form; the server answers with an HttpOnly cookie and every later PDF
+     * request is authorized by that cookie. The token is never accepted from the URL,
+     * so it cannot leak through access logs, browser history or a {@code Referer}
+     * header. The same gate covers the PDF directory listing, so file names do not
+     * leak either. When {@code requireAuth} is false, or when no token is set, PDFs
+     * are served as before.
      *
-     * @param requireAuth whether PDF requests must carry the token
-     * @param token       the token a request must present; blank means the gate is inert
+     * @param requireAuth whether PDF requests must carry the unlock cookie
+     * @param token       the token the unlock form must present; blank means the gate is inert
      */
     public record Pdf(boolean requireAuth, String token) {
         public Pdf {

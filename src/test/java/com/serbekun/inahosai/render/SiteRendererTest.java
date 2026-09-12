@@ -518,6 +518,39 @@ class SiteRendererTest {
 
     // endregion
 
+    // region PDF gate
+
+    @Test
+    void theWorksPageShowsAPasswordFormWhenThePdfGateIsArmed() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pdf: {require_auth: true, token: "SECRET"}
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        assertThat(render(config, "/manabi"))
+                .contains("action=\"/api/v0/pdf/unlock\"")
+                .contains("type=\"password\"")
+                .contains("name=\"next\" value=\"/manabi\"")
+                .doesNotContain("SECRET");
+    }
+
+    @Test
+    void noPasswordFormIsShownWhenThePdfGateIsOff() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        assertThat(render(config, "/manabi")).doesNotContain("api/v0/pdf/unlock");
+    }
+
+    // endregion
+
     // region Sitemap and robots
 
     @Test
@@ -538,7 +571,8 @@ class SiteRendererTest {
         String xml = new String(page.body(), StandardCharsets.UTF_8);
         assertThat(xml)
                 .contains("<loc>https://example.com/</loc>")
-                .contains("<loc>https://example.com/jikan</loc>");
+                .contains("<loc>https://example.com/jikan</loc>")
+                .doesNotContain("/static/v0/pdf");
     }
 
     @Test
@@ -563,6 +597,7 @@ class SiteRendererTest {
         assertThat(text)
                 .contains("User-agent: *")
                 .contains("Disallow: /api/v0/")
+                .contains("Disallow: /static/v0/pdf/")
                 .contains("Sitemap: https://inahosai.serbekun.com/sitemap.xml");
     }
 

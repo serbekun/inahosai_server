@@ -144,9 +144,16 @@ To add a PDF (a programme, a map), drop it in `data/static/pdf/` and link to it 
 is unpacked on first run, so a download works out of the box; replace it with your own.
 
 PDFs can be put behind a token. Set `pdf.require_auth: true` and a non-empty
-`pdf.token` in the config; then every PDF request (and the PDF directory listing) must
-carry `?token=...`, e.g. `/static/v0/pdf/sample.pdf?token=SECRET`. A missing or wrong
-token returns `401`. With `require_auth: false`, or with an empty token, PDFs stay public.
+`pdf.token` in the config. A password form then appears on the 学び page; the visitor
+submits the token once, the server answers with an HttpOnly cookie, and every later PDF
+request (and the PDF directory listing) is authorized by that cookie. A missing or wrong
+token returns `401`. The token is never accepted from a URL, so it cannot leak through
+access logs, browser history or a `Referer` header.
+
+Gated or not, PDF replies are sent with `Cache-Control: private, no-store` and
+`X-Robots-Tag: noindex, nofollow`, and `/static/v0/pdf/` is disallowed in `robots.txt`,
+so documents stay out of shared caches and search indexes. With `require_auth: false`,
+or with an empty token, PDFs stay public but keep those headers.
 
 The `data/` directory is git-ignored and must never be committed: it is where private
 files and operator edits live.

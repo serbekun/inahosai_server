@@ -127,7 +127,7 @@ public final class ConfigKeys {
                     "Require a token before serving /static/v0/pdf/*. Off by default.",
                     false, c -> c.pdf().requireAuth()),
             new Key("pdf.token",
-                    "Token a PDF request must present when pdf.require_auth is true.",
+                    "Password posted once to unlock /static/v0/pdf/*; kept in an HttpOnly cookie.",
                     false, c -> !c.pdf().token().isEmpty()));
 
     /**

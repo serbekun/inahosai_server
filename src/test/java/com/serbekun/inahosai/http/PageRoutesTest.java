@@ -175,6 +175,7 @@ class PageRoutesTest {
             assertThat(response.header("Content-Type")).startsWith("text/plain");
             assertThat(response.body().string())
                     .contains("User-agent: *")
+                    .contains("Disallow: /static/v0/pdf/")
                     .contains("Sitemap: https://inahosai.serbekun.com/sitemap.xml");
         });
     }

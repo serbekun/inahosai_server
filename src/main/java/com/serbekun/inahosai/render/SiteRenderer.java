@@ -229,6 +229,9 @@ public class SiteRenderer {
         text.append("Allow: /\n");
         text.append("Disallow: /api/v0/\n");
         text.append("Disallow: /setup\n");
+        // Gated documents must not be crawled; the PDF responses also carry a
+        // X-Robots-Tag for crawlers that reach one through a link.
+        text.append("Disallow: /static/v0/pdf/\n");
 
         String baseUrl = config.site().baseUrl();
         if (!baseUrl.isEmpty()) {
@@ -330,6 +333,11 @@ public class SiteRenderer {
         List<Map<String, Object>> works = works(config);
         model.put("works", works);
         model.put("hasWorks", !works.isEmpty());
+
+        // Shown on a page that links PDFs when the PDF gate is armed: the visitor posts
+        // the password once and the server answers with the HttpOnly cookie that
+        // authorizes the later PDF links. The URL never carries the token.
+        model.put("hasPdfGate", config.pdf().requireAuth() && !config.pdf().token().isEmpty());
 
         model.put("hasGate", !site.gateUrl().isEmpty() && !site.gateLabel().isEmpty());
         model.put("gateUrl", site.gateUrl());

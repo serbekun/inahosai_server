@@ -180,9 +180,15 @@ debug:
 pdf:
   # Gate for the PDF files in the on-disk pdf directory, served at /static/v0/pdf/*.
   #
-  # When require_auth is true, every PDF request (and the PDF directory listing) must
-  # present pdf.token as the "token" query parameter, e.g.
-  # /static/v0/pdf/sample.pdf?token=SECRET. A missing or wrong token gets 401.
+  # When require_auth is true, the visitor submits pdf.token once through the form on
+  # the 学び page. The server checks it and answers with an HttpOnly cookie; every
+  # later PDF request (and the PDF directory listing) is authorized by that cookie,
+  # not by the URL. A missing or wrong token gets 401. The token never appears in a
+  # URL, so it cannot leak through access logs, browser history or a Referer header.
+  #
+  # PDF responses are sent with "Cache-Control: private, no-store" and
+  # "X-Robots-Tag: noindex, nofollow", so they stay out of shared caches and search
+  # indexes. /static/v0/pdf/ is also disallowed in robots.txt.
   #
   # Set a token whenever require_auth is true; an empty token leaves the PDFs open.
   # Turning this on or off takes effect at startup only.

@@ -113,7 +113,7 @@ On first run the server copies bundled templates into `data/static/` and never o
 3. Never copy those replacements back into `src/main/resources/`.
 4. Before `git push`, run `git status` and look for `.pdf` / student photos.
 
-Optional gate: `pdf.require_auth: true` and a non-empty `pdf.token` make every PDF URL require `?token=...`. That is access control on the running server. It does **not** protect a file you committed.
+Optional gate: `pdf.require_auth: true` and a non-empty `pdf.token` put every PDF behind a password form on the 学び page. The visitor submits the token once; the server sets an HttpOnly cookie and authorizes later PDF requests from it, so the token never appears in a URL, access log or `Referer`. That is access control on the running server. It does **not** protect a file you committed.
 
 Photographs of identifiable students are 肖像権. Permission is the school’s problem, not a software licence. If you do not have it, do not publish the picture — not in git, not on the site.
 

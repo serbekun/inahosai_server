@@ -16,6 +16,10 @@ import io.javalin.Javalin;
  *   <li>{@code GET /static/v0/{kind}/{name}} — the file itself</li>
  * </ul>
  *
+ * <p>When the PDF gate is armed, {@code POST /api/v0/pdf/unlock} is registered as
+ * well: it takes the token in the request body and sets the HttpOnly cookie the PDF
+ * routes then check, so the token never appears in a URL.</p>
+ *
  * <p>Trailing slashes are ignored by Javalin by default, so
  * {@code /static/v0/css/} hits the listing route as well.</p>
  */
@@ -36,6 +40,13 @@ public class StaticRoutes implements HttpHandler {
 
             svr.get(base, ctx -> staticV0Http.serve(ctx, "", resource));
             svr.get(base + "/{name}", ctx -> staticV0Http.serve(ctx, resource));
+        }
+
+        // Registered only while the gate is armed, exactly like the /debug mount: an
+        // open deployment has no unlock endpoint to probe. The form posts the token in
+        // the body and the response only sets a cookie, so the token stays out of URLs.
+        if (staticV0Http.pdfAuthRequired()) {
+            svr.post(StaticV0Http.UNLOCK_PATH, staticV0Http::unlock);
         }
     }
 }

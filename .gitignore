@@ -7,6 +7,9 @@ target/
 # dropped in by the operator. Never commit this — it is not source.
 data/
 
+# Inahosai Server metadata for test
+config.yaml
+
 # IntelliJ IDEA
 .idea/
 *.iml

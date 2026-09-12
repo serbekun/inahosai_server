@@ -563,6 +563,67 @@ body {
   background: var(--gold);
 }
 
+/* The PDF password form. It appears above the works list when the gate is armed, so
+   the token is posted once and never placed in a URL. */
+.pdfgate {
+  width: min(1040px, 92vw);
+  margin: 0 auto clamp(24px, 4vh, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.pdfgate__label {
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: .14em;
+  color: var(--ink-soft);
+}
+
+.pdfgate__row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.pdfgate__input {
+  min-width: 0;
+  padding: .72em 1.1em;
+  font-family: inherit;
+  font-size: clamp(13px, 1.1vw, 15px);
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+}
+
+.pdfgate__input:focus-visible {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.pdfgate__submit {
+  padding: .72em 1.6em;
+  font-family: inherit;
+  font-size: clamp(11px, 1vw, 14px);
+  letter-spacing: .2em;
+  text-indent: .2em;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color .25s var(--ease), border-color .25s var(--ease),
+              background-color .25s var(--ease);
+}
+
+.pdfgate__submit:hover,
+.pdfgate__submit:focus-visible {
+  color: var(--paper);
+  border-color: var(--gold);
+  background: var(--gold);
+}
+
 @media (max-width: 720px) {
   .branchmap--works .branchmap__row { grid-template-columns: 1fr; }
   .branchmap--works .branchmap__bar { display: none; }

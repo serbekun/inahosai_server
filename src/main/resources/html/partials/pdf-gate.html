@@ -1,0 +1,11 @@
+{{#hasPdfGate}}
+    <form class="pdfgate" method="post" action="/api/v0/pdf/unlock">
+      <input type="hidden" name="next" value="{{page.route}}">
+      <label class="pdfgate__label" for="pdf-token">作品PDFのパスワード</label>
+      <div class="pdfgate__row">
+        <input class="pdfgate__input" id="pdf-token" type="password" name="token"
+               autocomplete="current-password" required>
+        <button class="pdfgate__submit" type="submit">開く</button>
+      </div>
+    </form>
+{{/hasPdfGate}}
