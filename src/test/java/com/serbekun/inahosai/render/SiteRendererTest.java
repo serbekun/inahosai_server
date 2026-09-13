@@ -279,9 +279,41 @@ class SiteRendererTest {
     }
 
     @Test
-    void anUnsetAppleTouchIconProducesNoLinkElement() {
-        // The tag used to point at an image that does not exist, 404ing on every page.
-        assertThat(render(defaultConfig(), "/")).doesNotContain("apple-touch-icon");
+    void anUnsetAppleTouchIconFallsBackToTheGeneratedIcon() {
+        // The generated PNG always exists, so the tag no longer points at a 404 even
+        // when site.apple_touch_icon is empty.
+        assertThat(render(defaultConfig(), "/"))
+                .contains("<link rel=\"apple-touch-icon\" sizes=\"180x180\" "
+                        + "href=\"/apple-touch-icon.png\">");
+    }
+
+    @Test
+    void aConfiguredAppleTouchIconOverridesTheGeneratedOne() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                site: {static_prefix: "/static/v0", apple_touch_icon: "icon.png"}
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/"))
+                .contains("href=\"/static/v0/images/icon.png\"");
+    }
+
+    @Test
+    void theFaviconGlyphIsTheFirstCharacterOfTheLatinName() {
+        assertThat(FaviconRenderer.glyph(defaultConfig())).isEqualTo("K");
+    }
+
+    @Test
+    void theHeadLinksRasterIconsForBrowsersAndSearchEngines() {
+        String html = render(defaultConfig(), "/");
+
+        assertThat(html)
+                .contains("type=\"image/svg+xml\"")
+                .contains("href=\"/favicon.ico\"")
+                .contains("type=\"image/png\" sizes=\"192x192\" href=\"/favicon.png\"");
     }
 
     @Test

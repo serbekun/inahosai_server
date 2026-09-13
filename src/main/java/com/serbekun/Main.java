@@ -11,6 +11,7 @@ import com.serbekun.inahosai.config.SiteConfigLoader;
 import com.serbekun.inahosai.http.InitHttp;
 import com.serbekun.inahosai.http.handles.AdminReload;
 import com.serbekun.inahosai.http.handles.DebugPages;
+import com.serbekun.inahosai.http.handles.FaviconRoutes;
 import com.serbekun.inahosai.http.handles.HttpHandler;
 import com.serbekun.inahosai.http.handles.PageRoutes;
 import com.serbekun.inahosai.http.handles.SetupPage;
@@ -18,6 +19,7 @@ import com.serbekun.inahosai.http.handles.StaticRoutes;
 import com.serbekun.inahosai.http.handles.V0Health;
 import com.serbekun.inahosai.http.handles.V0LiveType;
 import com.serbekun.inahosai.http.handles.WorksRoutes;
+import com.serbekun.inahosai.render.FaviconRenderer;
 import com.serbekun.inahosai.render.SiteRenderer;
 import com.serbekun.inahosai.resources.LookupOrder;
 import com.serbekun.inahosai.resources.ResourceCache;
@@ -80,7 +82,8 @@ public final class Main {
             setupPage,
             new DebugPages(resourcesService, siteConfig),
             new AdminReload(siteConfigLoader::load, pageRoutes, setupPage, worksRoutes),
-            new StaticRoutes(resourcesService, siteConfig)
+            new StaticRoutes(resourcesService, siteConfig),
+            new FaviconRoutes(new FaviconRenderer(siteConfig))
         );
 
         Javalin svr = Javalin.create();

@@ -40,9 +40,11 @@ public final class ConfigKeys {
 
             new Key("school.name_ja", "School name in Japanese. Shown in the hero and footer.",
                     true, c -> !c.school().nameJa().isEmpty()),
-            new Key("school.name_short", "Short school name. Also the favicon glyph.",
+            new Key("school.name_short", "Short school name. Shown in the header mark.",
                     false, c -> !c.school().nameShort().isEmpty()),
-            new Key("school.name_latin", "Latin transliteration shown under the hero title.",
+            new Key("school.name_latin",
+                    "Latin transliteration shown under the hero title. Its first "
+                            + "character is the favicon glyph.",
                     false, c -> !c.school().nameLatin().isEmpty()),
 
             new Key("festival.name", "Festival name. Shown in the header, hero and footer.",

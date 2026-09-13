@@ -392,7 +392,6 @@ public class SiteRenderer {
         // The favicon is an inline SVG data URI, so this value lands in a percent-encoded
         // context rather than an HTML one -- it must be URL-encoded, not HTML-escaped.
         model.put("iconGlyphEncoded", iconGlyph(config));
-
         String heroPhoto = config.hero().photo();
         model.put("hasHeroPhoto", !heroPhoto.isEmpty());
         model.put("heroPhotoUrl", imageUrl(staticPrefix, heroPhoto));
@@ -435,8 +434,11 @@ public class SiteRenderer {
         model.put("hasAuthorLink", !site.author().isEmpty() && !site.authorUrl().isEmpty());
         model.put("authorUrl", site.authorUrl());
 
-        model.put("hasAppleTouchIcon", !site.appleTouchIcon().isEmpty());
-        model.put("appleTouchIconUrl", imageUrl(staticPrefix, site.appleTouchIcon()));
+        // The generated apple-touch-icon always exists, so the tag never points at a
+        // 404. A configured site.apple_touch_icon overrides it.
+        model.put("appleTouchIconUrl", !site.appleTouchIcon().isEmpty()
+                ? imageUrl(staticPrefix, site.appleTouchIcon())
+                : "/apple-touch-icon.png");
 
         model.put("nav", nav(config, page));
         model.put("conceptLines", lines(config.festival().conceptLead()));
@@ -807,15 +809,8 @@ public class SiteRenderer {
      * @return the encoded glyph, or an empty string when no school name is set
      */
     private static String iconGlyph(SiteConfig config) {
-        String name = !config.school().nameShort().isEmpty()
-                ? config.school().nameShort()
-                : config.school().nameJa();
-        if (name.isEmpty()) {
-            return "";
-        }
-        // A single code point, so a surrogate pair is not split in half.
-        String glyph = name.substring(0, name.offsetByCodePoints(0, 1));
-        return URLEncoder.encode(glyph, StandardCharsets.UTF_8);
+        String glyph = FaviconRenderer.glyph(config);
+        return glyph.isEmpty() ? "" : URLEncoder.encode(glyph, StandardCharsets.UTF_8);
     }
 
     // endregion

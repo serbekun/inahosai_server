@@ -26,9 +26,10 @@ port: 2323
 school:
   # Full school name in Japanese. Required.
   name_ja: "茎崎"
-  # Short form used in the header mark and the favicon glyph.
+  # Short form used in the header mark.
   name_short: "茎崎"
-  # Latin transliteration, shown under the hero title.
+  # Latin transliteration, shown under the hero title. Its first character is the
+  # favicon glyph (here "K"), so keep it starting with the initial people recognize.
   name_latin: "KUKIZAKI"
 
 festival:
