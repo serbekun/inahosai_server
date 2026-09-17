@@ -797,3 +797,81 @@ body {
   color: var(--ink);
 }
 
+/* ---------------------------------------------------------------------------
+   Live stream on the 場所 page.
+
+   YouTube is embedded in place (the one allowed third-party request); Zoom
+   cannot be framed, so it is offered as an external link that opens a new tab.
+   The whole section is absent when no usable stream is configured.
+   --------------------------------------------------------------------------- */
+.stream {
+  background: var(--paper);
+  padding: clamp(28px, 5vh, 60px) clamp(18px, 4vw, 48px) clamp(40px, 7vh, 90px);
+}
+
+.stream__title {
+  margin: 0 0 clamp(18px, 3vh, 34px);
+  text-align: center;
+  font-size: clamp(18px, 2.2vw, 28px);
+  letter-spacing: .14em;
+  color: var(--ink);
+}
+
+.stream__frame {
+  width: min(960px, 92vw);
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: var(--hero-ink);
+  border: 1px solid var(--ink-faint);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.stream__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.stream__zoom {
+  width: min(960px, 92vw);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.4vh, 26px);
+}
+
+.stream__notice {
+  margin: 0 auto;
+  max-width: 42em;
+  text-align: center;
+  font-size: clamp(13px, 1.25vw, 17px);
+  line-height: 2.1;
+  letter-spacing: .08em;
+  color: var(--ink-soft);
+}
+
+.stream__btn {
+  padding: .72em 1.6em;
+  font-family: inherit;
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: .2em;
+  text-indent: .2em;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+  background: transparent;
+  transition: color .25s var(--ease), border-color .25s var(--ease),
+              background-color .25s var(--ease);
+}
+
+.stream__btn:hover,
+.stream__btn:focus-visible {
+  color: var(--paper);
+  border-color: var(--gold);
+  background: var(--gold);
+}
+

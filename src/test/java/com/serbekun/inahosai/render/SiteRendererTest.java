@@ -714,6 +714,83 @@ class SiteRendererTest {
 
     // endregion
 
+    // region Live stream
+
+    @Test
+    void aYoutubeStreamRendersAnInPlaceEmbed() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                stream: {type: "youtube", youtube_id: "dQw4w9WgXcQ"}
+                pages:
+                  - {key: basho, route: "/basho", template: basho.html}
+                """);
+
+        String html = render(config, "/basho");
+
+        assertThat(html)
+                .contains("class=\"stream__iframe\"")
+                .contains("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ")
+                .contains("allowfullscreen");
+        assertThat(html).doesNotContain("stream__zoom");
+    }
+
+    @Test
+    void aZoomStreamRendersAnExternalLinkInsteadOfAnEmbed() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                stream: {type: "zoom", zoom_url: "https://zoom.us/j/1234567890"}
+                pages:
+                  - {key: basho, route: "/basho", template: basho.html}
+                """);
+
+        String html = render(config, "/basho");
+
+        assertThat(html)
+                .contains("class=\"stream__btn\" href=\"https://zoom.us/j/1234567890\"")
+                .contains("target=\"_blank\"")
+                .contains("rel=\"noopener\"");
+        assertThat(html).doesNotContain("stream__iframe");
+    }
+
+    @Test
+    void noStreamRendersANeutralNoticeButKeepsThePage() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                pages:
+                  - {key: basho, route: "/basho", template: basho.html}
+                """);
+
+        String html = render(config, "/basho");
+
+        assertThat(html)
+                .contains("class=\"stream\"")
+                .contains("現在ライブ配信は予定されていません。")
+                .contains("id=\"concept\"");
+        assertThat(html).doesNotContain("stream__iframe").doesNotContain("stream__btn");
+    }
+
+    @Test
+    void aSelectedPlatformWithoutPayloadRendersTheNeutralNotice() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                stream: {type: "zoom"}
+                pages:
+                  - {key: basho, route: "/basho", template: basho.html}
+                """);
+
+        String html = render(config, "/basho");
+
+        assertThat(html)
+                .contains("現在ライブ配信は予定されていません。")
+                .doesNotContain("stream__btn");
+    }
+
+    // endregion
+
     // region Sitemap and robots
 
     @Test

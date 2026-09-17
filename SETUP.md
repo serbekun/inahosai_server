@@ -104,8 +104,10 @@ only fills `youtube_id` keeps working. A selected platform with no usable payloa
 as no stream.
 
 `GET /api/v0/live/type/` reports the effective platform, e.g. `{"type":"youtube"}`
-(also `"zoom"` or `"none"`). The backend supports both platforms; the bundled frontend
-still only renders the YouTube embed.
+(also `"zoom"` or `"none"`). The 場所 page renders the effective platform: YouTube is
+embedded in place (via `youtube-nocookie.com`), while Zoom cannot be framed and is
+offered as an external link that opens a new tab. With no usable stream the 場所 page
+shows a neutral notice ("現在ライブ配信は予定されていません。") in place of the player.
 
 ## 4. Anything unset hides its element
 

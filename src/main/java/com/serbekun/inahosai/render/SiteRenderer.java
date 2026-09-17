@@ -401,6 +401,10 @@ public class SiteRenderer {
 
         model.put("hasStream", config.stream().isLive());
         model.put("liveType", config.stream().effectiveType());
+        model.put("hasYoutubeStream",
+                config.stream().isLive() && config.stream().isYoutube());
+        model.put("hasZoomStream",
+                config.stream().isLive() && config.stream().isZoom());
         model.put("youtubeId", config.stream().youtubeId());
         model.put("zoomUrl", config.stream().zoomUrl());
 

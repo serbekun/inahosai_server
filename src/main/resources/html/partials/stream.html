@@ -1,0 +1,15 @@
+  <section class="stream" id="stream">
+    <h2 class="stream__title">{{page.footerWord}} — ライブ配信</h2>
+{{#hasYoutubeStream}}    <div class="stream__frame">
+      <iframe class="stream__iframe"
+              src="https://www.youtube-nocookie.com/embed/{{youtubeId}}"
+              title="ライブ配信" loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+    </div>
+{{/hasYoutubeStream}}{{#hasZoomStream}}    <div class="stream__zoom">
+      <p class="stream__notice">ライブ配信は Zoom で行います。下のボタンからご参加ください。</p>
+      <a class="stream__btn" href="{{zoomUrl}}" target="_blank" rel="noopener">Zoomを開く</a>
+    </div>
+{{/hasZoomStream}}{{^hasStream}}    <p class="stream__notice">現在ライブ配信は予定されていません。</p>
+{{/hasStream}}  </section>

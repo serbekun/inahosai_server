@@ -68,8 +68,10 @@ hero:
   dots_text: "茎崎"
 
 stream:
-  # Which live platform to embed: "youtube" or "zoom". Set to "none" (or leave blank)
-  # when there is no broadcast.
+  # Which live platform to show on the 場所 page: "youtube" or "zoom". Set to "none"
+  # (or leave blank) when there is no broadcast — the section then shows a neutral
+  # notice instead of a player. YouTube is embedded in place; Zoom cannot be framed,
+  # so it is shown as a link that opens a new tab.
   #
   # Leave this blank to infer the platform from whichever payload is set below, so a
   # config that only fills youtube_id keeps working.
