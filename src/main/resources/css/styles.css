@@ -776,9 +776,12 @@ body {
   color: var(--ink);
 }
 
+/* Centred like .concept__lead: the block is already centred by its auto margins,
+   so left-aligned prose inside it only looks off-centre under the centred title. */
 .about__body {
   max-width: 42em;
   margin: 0 auto;
+  text-align: center;
 }
 
 .about__text {
@@ -873,5 +876,42 @@ body {
   color: var(--paper);
   border-color: var(--gold);
   background: var(--gold);
+}
+
+/* ---------------------------------------------------------------------------
+   Phones.
+
+   Nothing overflows at 390px — the rules above are clamp()-based and the layouts
+   that need to stack already stack. What a phone actually gets is every clamp
+   bottomed out at its minimum: 10px eyebrow labels, 13px prose, and nav links
+   that are a 19px-tall line of text. This block raises those floors and gives
+   the nav a real tap target. It only overrides sizes and spacing, never the
+   structure, so the desktop page is unaffected.
+   --------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  /* The nav is the only way between pages on a phone, so each link needs a
+     target a thumb can hit, not an 11px run of characters. */
+  .topbar { padding: 14px 18px 6px; font-size: 12px; }
+  .topbar__nav { gap: 2px 12px; margin-top: 2px; }
+  .topbar__link { padding: 11px 2px; }
+
+  /* Prose: 13px serif with .08em tracking is small on a handset. */
+  .page-lead__text,
+  .concept__lead,
+  .about__text,
+  .stream__notice,
+  .branchmap__desc { font-size: 14px; line-height: 2; }
+
+  /* Labels and the small print around them. */
+  .concept__label,
+  .about__label { font-size: 11px; }
+  .branchmap__grade,
+  .foot { font-size: 12px; }
+
+  /* A little more air between the prose and the edge of a narrow screen. */
+  .concept,
+  .about,
+  .page-lead,
+  .stream { padding-left: 22px; padding-right: 22px; }
 }
 
