@@ -451,6 +451,18 @@ public class SiteRenderer {
         model.put("hasAbout", !aboutLines.isEmpty());
         model.put("graphSummary", graphSummary(config.graph()));
 
+        // Pre-festival reduction: when the teaser is on, these pages show their hero and
+        // lead and then this text instead of their normal sections. It is off by default
+        // and is informational only -- no visitor input is collected anywhere.
+        boolean hasTeaser = config.teaser().replaces(page.key());
+        model.put("hasTeaser", hasTeaser);
+        model.put("teaserText", config.teaser().textFor(page.key()));
+
+        // The hero's scroll cue points at the first section that actually exists, so it is
+        // never a dead anchor when the teaser hides the usual one.
+        String scrollTarget = "manabi".equals(page.key()) ? "works" : "concept";
+        model.put("scrollTarget", hasTeaser ? "teaser" : scrollTarget);
+
         List<String> missing = config.missingKeys();
         model.put("notConfigured", !missing.isEmpty());
 

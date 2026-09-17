@@ -316,4 +316,51 @@ class SiteConfigTest {
     }
 
     // endregion
+
+    // region teaser block
+
+    @Test
+    void teaserDefaultsToDisabledWithNoText() {
+        SiteConfig config = SiteConfigLoader.emptyConfig();
+
+        assertThat(config.teaser().enabled()).isFalse();
+        assertThat(config.teaser().textFor("jikan")).isEmpty();
+        assertThat(config.teaser().replaces("jikan")).isFalse();
+    }
+
+    @Test
+    void theBundledDefaultShipsTheTeaserOff() {
+        assertThat(loader.loadBundledDefault().teaser().enabled()).isFalse();
+    }
+
+    @Test
+    void teaserParsesOneTextPerPage() {
+        SiteConfig config = loader.parse("""
+                teaser:
+                  enabled: true
+                  jikan: "  time  "
+                  manabi: "learn"
+                  basho: "place"
+                  sedai: "memory"
+                """);
+
+        assertThat(config.teaser().enabled()).isTrue();
+        assertThat(config.teaser().textFor("jikan")).isEqualTo("time");
+        assertThat(config.teaser().textFor("manabi")).isEqualTo("learn");
+        assertThat(config.teaser().textFor("basho")).isEqualTo("place");
+        assertThat(config.teaser().textFor("sedai")).isEqualTo("memory");
+        // The home page is not part of the teaser mode.
+        assertThat(config.teaser().textFor("index")).isEmpty();
+    }
+
+    @Test
+    void teaserDoesNotReplaceAPageWhoseTextIsEmpty() {
+        SiteConfig.Teaser teaser = new SiteConfig.Teaser(true, "t", "", "", "");
+
+        assertThat(teaser.replaces("jikan")).isTrue();
+        assertThat(teaser.replaces("manabi")).isFalse();
+        assertThat(teaser.replaces("index")).isFalse();
+    }
+
+    // endregion
 }

@@ -16,13 +16,15 @@
     {{/school.nameLatin}}
     <p class="hero__slogan"><span class="hero__slogan-line"></span>{{festival.slogan}}<span class="hero__slogan-line"></span></p>
 
-    <a class="scrollcue" href="#works">
+    <a class="scrollcue" href="#{{scrollTarget}}">
       <span class="scrollcue__text">SCROLL</span>
       <span class="scrollcue__bar"></span>
     </a>
   </section>
 
 {{>page-lead}}
+{{>teaser}}
+{{^hasTeaser}}
   <section class="works" id="works">
     <h2 class="works__title">{{page.footerWord}} — 展示作品</h2>
 
@@ -42,6 +44,7 @@
       </ul>
     </div>
   </section>
+{{/hasTeaser}}
 </main>
 
 {{>footer}}

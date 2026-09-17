@@ -12,6 +12,7 @@
 
 {{>hero-bg}}
 
+{{^hasTeaser}}
     <div class="branchmap">
       <span class="branchmap__stem"></span>
       <span class="branchmap__bar"></span>
@@ -30,9 +31,11 @@
         </li>
       </ul>
     </div>
+{{/hasTeaser}}
   </section>
 
 {{>page-lead}}
+{{>teaser}}
 </main>
 
 {{>footer}}

@@ -90,6 +90,13 @@ Note that Java renders the first year of an era as `令和1年`, not `令和元�
   `description`, a lowercase `key` and a list of `files` (`{name, url}`). One file
   downloads straight from the button; two or more open a chooser page at `/works/{key}`.
   The chooser is not part of `pages`, so it never appears in the nav or the sitemap.
+- `teaser` — **off by default.** When `teaser.enabled: true`, the 時間・学び・場所・世代
+  pages show a short quote or notice (`teaser.jikan`, `teaser.manabi`, `teaser.basho`,
+  `teaser.sedai`) instead of their usual sections; the home page is unchanged. A page
+  whose text is empty keeps its normal content, so enabling it cannot produce a blank
+  page. This is content only: it adds no form, endpoint or storage and does not let a
+  visitor write anything on the site. The bundled 思い出 text only points at the QR code
+  in the printed しおり. Turn it back to `false` once the real content is ready.
 
 ### Live stream
 

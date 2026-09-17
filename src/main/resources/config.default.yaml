@@ -226,6 +226,30 @@ pdf:
   require_auth: false
   token: ""
 
+teaser:
+  # OFF BY DEFAULT. This is a pre-festival mode for the weeks when the timetable, the
+  # works and the venue are not ready: when enabled, the 時間 (jikan), 学び (manabi),
+  # 場所 (basho) and 世代 (sedai) pages show only their hero and the short text below
+  # instead of their usual sections. The home page is not affected.
+  #
+  # A page whose text is left empty keeps its normal content, so enabling this can never
+  # produce a blank page. Turn it back to false once the real content is ready.
+  #
+  # IMPORTANT: this is content only. It adds no form, endpoint or storage for visitor
+  # input, and it does not let anyone write memories on the site. The 思い出 text below
+  # is a notice that memories are collected through the QR code in the printed しおり.
+  # On-site guest input is deliberately not implemented — it must wait for the
+  # PostgreSQL-backed Repository described in the README.
+  enabled: false
+  # Shown on /jikan. A quiet line about time.
+  jikan: "時間は、いまこの瞬間だけが本当に動いている。過去と未来は、その影にすぎない。"
+  # Shown on /manabi. Say where the PDFs will be shared, rather than linking them early.
+  manabi: "作品PDFのダウンロード方法は、当日配布の「しおり」と会場の案内でお知らせします。しおりのQRコードからもご覧いただけます。"
+  # Shown on /basho. A quiet line about place.
+  basho: "場所は、思い出が生まれる舞台。"
+  # Shown on /sedai. Point at the しおり QR code; do not collect input on the site.
+  sedai: "思い出は、しおりのQRコードから投稿できます。このサイトでは受け付けていません。"
+
 pages:
   # Every page of the site. The shared header iterates this list, so the nav is
   # identical everywhere and aria-current is computed rather than copy-pasted.

@@ -747,6 +747,29 @@ body {
   color: var(--ink-soft);
 }
 
+/* ---------------------------------------------------------------------------
+   Pre-festival teaser.
+
+   Shown instead of a page's usual sections when teaser.enabled is set: one
+   short quote or notice, so an unfinished page still reads as deliberate.
+   It is off by default and carries no interactive element.
+   --------------------------------------------------------------------------- */
+.teaser {
+  padding: clamp(40px, 8vh, 110px) clamp(18px, 4vw, 60px);
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.teaser__text {
+  margin: 0 auto;
+  max-width: 34em;
+  text-align: center;
+  font-size: clamp(15px, 1.6vw, 21px);
+  line-height: 2.2;
+  letter-spacing: .12em;
+  color: var(--ink);
+}
+
 .about {
   padding: clamp(40px, 7vh, 90px) clamp(18px, 4vw, 60px) clamp(60px, 10vh, 120px);
   max-width: 1360px;

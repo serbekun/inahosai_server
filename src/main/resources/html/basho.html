@@ -16,15 +16,18 @@
     {{/school.nameLatin}}
     <p class="hero__slogan"><span class="hero__slogan-line"></span>{{festival.slogan}}<span class="hero__slogan-line"></span></p>
 
-    <a class="scrollcue" href="#concept">
+    <a class="scrollcue" href="#{{scrollTarget}}">
       <span class="scrollcue__text">SCROLL</span>
       <span class="scrollcue__bar"></span>
     </a>
   </section>
 
 {{>page-lead}}
+{{>teaser}}
+{{^hasTeaser}}
 {{>concept}}
 {{>stream}}
+{{/hasTeaser}}
 </main>
 
 {{>footer}}

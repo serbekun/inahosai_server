@@ -40,7 +40,8 @@ public record SiteConfig(
         Site site,
         List<Page> pages,
         Debug debug,
-        Pdf pdf) {
+        Pdf pdf,
+        Teaser teaser) {
 
     private static final Logger log = LoggerFactory.getLogger(SiteConfig.class);
 
@@ -75,6 +76,7 @@ public record SiteConfig(
         pages = copyOf(pages);
         debug = debug != null ? debug : new Debug(false, "");
         pdf = pdf != null ? pdf : new Pdf(false, "");
+        teaser = teaser != null ? teaser : new Teaser(false, null, null, null, null);
     }
 
     /** The school the festival belongs to. */
@@ -312,6 +314,56 @@ public record SiteConfig(
     public record Pdf(boolean requireAuth, String token) {
         public Pdf {
             token = str(token);
+        }
+    }
+
+    /**
+     * Opt-in reduction of the {@code jikan}, {@code manabi}, {@code basho} and
+     * {@code sedai} pages to a single short quote or notice.
+     *
+     * <p>This exists for the weeks before a festival, when the timetable, the works and
+     * the venue are not ready yet but the site is already public. When {@code enabled} is
+     * true, each of those pages renders its hero and lead and then the text configured
+     * here instead of its usual sections. A page whose text is empty keeps its normal
+     * content, so an enabled teaser can never leave a blank page.
+     *
+     * <p>It is <strong>off by default</strong>, and it is content only: it does not add
+     * any form, endpoint or storage for visitor input. The 思い出 text is a notice that
+     * memories are collected through the QR code in the printed しおり, not on the site.
+     */
+    public record Teaser(boolean enabled, String jikan, String manabi, String basho,
+                         String sedai) {
+        public Teaser {
+            jikan = str(jikan);
+            manabi = str(manabi);
+            basho = str(basho);
+            sedai = str(sedai);
+        }
+
+        /**
+         * The teaser text for a page, or an empty string when the page has none.
+         *
+         * @param pageKey the page's config key, e.g. {@code jikan}
+         * @return the configured text for that page, or empty
+         */
+        public String textFor(String pageKey) {
+            return switch (pageKey) {
+                case "jikan" -> jikan;
+                case "manabi" -> manabi;
+                case "basho" -> basho;
+                case "sedai" -> sedai;
+                default -> "";
+            };
+        }
+
+        /**
+         * Whether this page's normal content should be replaced by its teaser text.
+         *
+         * @param pageKey the page's config key
+         * @return true when the teaser is enabled and the page has text
+         */
+        public boolean replaces(String pageKey) {
+            return enabled && !textFor(pageKey).isEmpty();
         }
     }
 

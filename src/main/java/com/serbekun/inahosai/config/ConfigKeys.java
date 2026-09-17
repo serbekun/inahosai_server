@@ -134,7 +134,22 @@ public final class ConfigKeys {
                     false, c -> c.pdf().requireAuth()),
             new Key("pdf.token",
                     "Password posted once to unlock /static/v0/pdf/*; kept in an HttpOnly cookie.",
-                    false, c -> !c.pdf().token().isEmpty()));
+                    false, c -> !c.pdf().token().isEmpty()),
+
+            new Key("teaser.enabled",
+                    "Replace the jikan/manabi/basho/sedai pages with a short quote or notice. "
+                            + "Off by default; it is informational content only, not an input form.",
+                    false, c -> c.teaser().enabled()),
+            new Key("teaser.jikan", "Text shown instead of the 時間 page's timetable.",
+                    false, c -> !c.teaser().jikan().isEmpty()),
+            new Key("teaser.manabi",
+                    "Text shown instead of the 学び page's works, e.g. where the files will be shared.",
+                    false, c -> !c.teaser().manabi().isEmpty()),
+            new Key("teaser.basho", "Text shown instead of the 場所 page's map and stream.",
+                    false, c -> !c.teaser().basho().isEmpty()),
+            new Key("teaser.sedai",
+                    "Text shown instead of the 世代 page's content, e.g. where to leave 思い出.",
+                    false, c -> !c.teaser().sedai().isEmpty()));
 
     /**
      * The catalogue.

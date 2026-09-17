@@ -791,6 +791,96 @@ class SiteRendererTest {
 
     // endregion
 
+    // region Teaser
+
+    @Test
+    void theTeaserReplacesThePageSectionWhenEnabled() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                teaser:
+                  enabled: true
+                  manabi: "作品PDFは当日のしおりで案内します。"
+                pages:
+                  - {key: manabi, route: "/manabi", template: manabi.html}
+                """);
+
+        String html = render(config, "/manabi");
+
+        assertThat(html)
+                .contains("class=\"teaser\"")
+                .contains("作品PDFは当日のしおりで案内します。")
+                .contains("href=\"#teaser\"");
+        assertThat(html).doesNotContain("id=\"works\"");
+    }
+
+    @Test
+    void theTeaserIsOffByDefault() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                teaser:
+                  jikan: "この行は表示されない"
+                pages:
+                  - {key: jikan, route: "/jikan", template: jikan.html}
+                """);
+
+        String html = render(config, "/jikan");
+
+        assertThat(html).doesNotContain("class=\"teaser\"").doesNotContain("この行は表示されない");
+        assertThat(html).contains("branchmap");
+    }
+
+    @Test
+    void anEnabledTeaserWithNoTextKeepsTheNormalPage() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                teaser: {enabled: true}
+                pages:
+                  - {key: basho, route: "/basho", template: basho.html}
+                """);
+
+        String html = render(config, "/basho");
+
+        assertThat(html).doesNotContain("class=\"teaser\"");
+        assertThat(html).contains("id=\"concept\"");
+    }
+
+    @Test
+    void theTeaserLeavesTheHomePageAlone() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                teaser:
+                  enabled: true
+                  jikan: "t"
+                pages:
+                  - {key: index, route: "/", template: index.html}
+                """);
+
+        assertThat(render(config, "/")).doesNotContain("class=\"teaser\"");
+    }
+
+    @Test
+    void theTeaserTextIsEscaped() {
+        SiteConfig config = loader.parse("""
+                school: {name_ja: "茎崎"}
+                festival: {name: "稲穂祭", start_date: "2026-10-03"}
+                teaser:
+                  enabled: true
+                  sedai: "<script>alert(1)</script>"
+                pages:
+                  - {key: sedai, route: "/sedai", template: sedai.html}
+                """);
+
+        String html = render(config, "/sedai");
+
+        assertThat(html).doesNotContain("<script>alert(1)</script>").contains("&lt;script&gt;");
+    }
+
+    // endregion
+
     // region Sitemap and robots
 
     @Test
